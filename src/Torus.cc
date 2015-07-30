@@ -48,7 +48,7 @@ void Torus::SetMaps(const vec4 &tp,
 	            const AngPar &ap)
 {
   delete PT;
-  PT = new PoiNone; 
+  PT = new PoiNone;
   if(!TM) TM = new ToyIsochrone;
   TM->set_parameters(tp);
   GF.set_parameters(sn);
@@ -57,32 +57,32 @@ void Torus::SetMaps(const vec4 &tp,
 
 
 void Torus::SetPP(Potential * Phi, const Actions JPT)
-{ 
+{
   delete PT;
   PT = new PoiClosedOrbit(Phi,JPT);
 }
 
-void Torus::SetPP(double * param) 
+void Torus::SetPP(double * param)
 {
   delete PT;
   PT = new PoiClosedOrbit(param);
 }
 
-void Torus::SetPP(Actions J, Cheby cb1, Cheby cb2, Cheby cb3, 
-		  double thmax, double freq) 
+void Torus::SetPP(Actions J, Cheby cb1, Cheby cb2, Cheby cb3,
+		  double thmax, double freq)
 {
   delete PT;
   PT = new PoiClosedOrbit(J,cb1,cb2,cb3,thmax,freq);
 }
 
 void Torus::SetPP()
-{ 
-  delete PT;  
+{
+  delete PT;
   PT = new PoiNone;
 }
 
 void Torus::SetTP(const vec4& tp)
-{ 
+{
     if(!TM) TM = new ToyIsochrone;
     TM->set_parameters(tp);
 }
@@ -113,10 +113,10 @@ void Torus::show(ostream& out) const
     out <<"\n log|dSn/dJl|           : ";
 	AM.dSdJ2().write_log(out);
     out <<"\n log|dSn/dJp|           : ";
-	AM.dSdJ3().write_log(out);	
+	AM.dSdJ3().write_log(out);
 }
 
-bool Torus::write_ebf(const string filename, const string torusname) 
+bool Torus::write_ebf(const string filename, const string torusname)
 {
   if(ebf::ContainsKey(filename,"/"+torusname)) { return false; }
 
@@ -128,15 +128,15 @@ bool Torus::write_ebf(const string filename, const string torusname)
   } else {
     PTp = new double[2]; // just to give myself something to delete
   }
-  //vec6 PTp = PT->parameters();  
+  //vec6 PTp = PT->parameters();
   vec4 TMp = TM->parameters();
   int nSn = GF.NumberofParameters();
   int n1_tmp[nSn], n2_tmp[nSn];
   double Sn_tmp[nSn], dSn1[nSn], dSn2[nSn], dSn3[nSn];
   for(int i=0;i!=nSn;i++) {
-    n1_tmp[i] = GF.n1(i); 
-    n2_tmp[i] = GF.n2(i); 
-    Sn_tmp[i] = GF.coeff(i); 
+    n1_tmp[i] = GF.n1(i);
+    n2_tmp[i] = GF.n2(i);
+    Sn_tmp[i] = GF.coeff(i);
     dSn1[i]   = AM.dSdJ1(i);
     dSn2[i]   = AM.dSdJ2(i);
     dSn3[i]   = AM.dSdJ3(i);
@@ -152,7 +152,7 @@ bool Torus::write_ebf(const string filename, const string torusname)
 	     &Om[0],"a","",Om.NumberofTerms());
   ebf::Write(filename,"/"+torusname+"/errors",&dc[0],"a","",
 	     dc.NumberofTerms());
-  
+
   // Where there is the possibility of alternatives, subdirectories
   if(NPTp)
     ebf::Write(filename,"/"+torusname+"/pointtransform/shellorbit",
@@ -175,7 +175,7 @@ bool Torus::write_ebf(const string filename, const string torusname)
 bool Torus::read_ebf(const string filename, const string torusname) {
   ebf::EbfDataInfo dinfo;
   double *PP;
-  vec4 TMp; 
+  vec4 TMp;
   bool got_PT=false;
   // Read data
   if(ebf::ContainsKey(filename,"/"+torusname+"/actions")) {
@@ -189,7 +189,7 @@ bool Torus::read_ebf(const string filename, const string torusname) {
     ebf::Read(filename,"/"+torusname+"/frequencies",&Om[0],Om.NumberofTerms());
     ebf::Read(filename,"/"+torusname+"/errors",&dc[0],dc.NumberofTerms());
     if(ebf::ContainsKey(filename,"/"+torusname+"/pointtransform/shellorbit",
-			dinfo)) { 
+			dinfo)) {
       got_PT = true;
       PP = new double[dinfo.elements];
       ebf::Read(filename,"/"+torusname+"/pointtransform/shellorbit",
@@ -223,7 +223,7 @@ bool Torus::read_ebf(const string filename, const string torusname) {
     delete[] PP;
     return true;
   } else return false;
-  
+
 }
 
 
@@ -245,7 +245,7 @@ void Torus::TailorAndCutSN(const double ta, const double tb, const double off,
 void Torus::LevCof(const PSPD     &Jt,
     	           const Position &Q,
 		   const double   &a,
-		   const double   &b, 
+		   const double   &b,
 		   PSPD	          &QP,
 		   double         &ch,
  		   DB2            &B,
@@ -271,12 +271,12 @@ void Torus::LevCof(const PSPD     &Jt,
       for(j=0; j<2; j++)
 	for(k=0,dQdt[i][j]=0.; k<2; k++)
 	  dQdt[i][j]+= dQPdqp[i][k] * dq[k][j];
-	  
+
     dR      = (QP(0)==0.)? 1e99 : a*(Q(0)-QP(0));
     dz      = b*(Q(1)-QP(1));
     ch      = hypot(dR,dz);
     B[0]    = a*dR*dQdt[0][0] + b*dz*dQdt[1][0];
-    
+
     if(!QP(1) && !QP(3)) ch = 1e99;
     B[1]    = a*dR*dQdt[0][1] + b*dz*dQdt[1][1];
     A[0][0] = aq*pow(dQdt[0][0],2) + bq*pow(dQdt[1][0],2);
@@ -291,7 +291,7 @@ void Torus::LevCof(const PSPD         &Jt,
     	           const PSPD         &QP_aim,
 		   const double       &a,
 		   const double       &b,
-		   const double       &vscale, 
+		   const double       &vscale,
 		   PSPD	              &QP,
 		   double             &ch,
  		   DB2                &B,
@@ -325,7 +325,7 @@ void Torus::LevCof(const PSPD         &Jt,
       for(j=0; j<2; j++)
 	for(k=0,dQPdt[i][j]=0.; k<4; k++)
 	  dQPdt[i][j]+= dQPdqp[i][k] * dqp[k][j];
-	  
+
     dR      = (QP(0)==0.)? 1e99 : a*(QP_aim(0)-QP(0));
     dz      = b*(QP_aim(1)-QP(1));
     dvR     = vscale*(QP_aim(2)-QP(2));
@@ -333,14 +333,14 @@ void Torus::LevCof(const PSPD         &Jt,
     ch      = sqrt(dR*dR+dz*dz+dvR*dvR+dvz*dvz);
     if(!QP(1) && !QP(3)) ch = 1e99;
 
-    B[0]    = a*dR*dQPdt[0][0] + b*dz*dQPdt[1][0] 
+    B[0]    = a*dR*dQPdt[0][0] + b*dz*dQPdt[1][0]
       + vscale*dvR*dQPdt[2][0] + vscale*dvz*dQPdt[3][0];
     B[1]    = a*dR*dQPdt[0][1] + b*dz*dQPdt[1][1]
       + vscale*dvR*dQPdt[2][1] + vscale*dvz*dQPdt[3][1];
 
-    A[0][0] = aq*pow(dQPdt[0][0],2) + bq*pow(dQPdt[1][0],2) 
+    A[0][0] = aq*pow(dQPdt[0][0],2) + bq*pow(dQPdt[1][0],2)
       + vscale2*(pow(dQPdt[2][0],2) + pow(dQPdt[3][0],2));
-    A[0][1] = aq*dQPdt[0][0]*dQPdt[0][1] + bq*dQPdt[1][0]*dQPdt[1][1] 
+    A[0][1] = aq*dQPdt[0][0]*dQPdt[0][1] + bq*dQPdt[1][0]*dQPdt[1][1]
       + vscale2*(dQPdt[2][0]*dQPdt[2][1] + dQPdt[3][0]*dQPdt[3][1]);
     A[1][0] = A[0][1];
     A[1][1] = aq*pow(dQPdt[0][1],2) + bq*pow(dQPdt[1][1],2)
@@ -349,7 +349,7 @@ void Torus::LevCof(const PSPD         &Jt,
 
 void Torus::LevCof(const PSPD         &Jt,
     	           const PSPD         &QP_aim,
-		   const Vector<double,4> &sc, 
+		   const Vector<double,4> &sc,
 		   PSPD	              &QP,
 		   double             &ch,
  		   DB2                &B,
@@ -384,7 +384,7 @@ void Torus::LevCof(const PSPD         &Jt,
       for(j=0; j<2; j++)
 	for(k=0,dQPdt[i][j]=0.; k<4; k++)
 	  dQPdt[i][j]+= dQPdqp[i][k] * dqp[k][j];
-	  
+
     dR      = (QP(0)==0.)? 1e99 : sc[0]*(QP_aim(0)-QP(0));
     dz      = sc[1]*(QP_aim(1)-QP(1));
     dvR     = sc[2]*(QP_aim(2)-QP(2));
@@ -392,14 +392,14 @@ void Torus::LevCof(const PSPD         &Jt,
     ch      = sqrt(dR*dR+dz*dz+dvR*dvR+dvz*dvz);
     if(!QP(1) && !QP(3)) ch = 1e99;
 
-    B[0]    = sc[0]*dR*dQPdt[0][0] + sc[1]*dz*dQPdt[1][0] 
+    B[0]    = sc[0]*dR*dQPdt[0][0] + sc[1]*dz*dQPdt[1][0]
       + sc[2]*dvR*dQPdt[2][0] + sc[3]*dvz*dQPdt[3][0];
     B[1]    = sc[0]*dR*dQPdt[0][1] + sc[1]*dz*dQPdt[1][1]
       + sc[2]*dvR*dQPdt[2][1] + sc[3]*dvz*dQPdt[3][1];
 
-    A[0][0] = scq[0]*powf(dQPdt[0][0],2) + scq[1]*powf(dQPdt[1][0],2) 
+    A[0][0] = scq[0]*powf(dQPdt[0][0],2) + scq[1]*powf(dQPdt[1][0],2)
       + scq[2]*powf(dQPdt[2][0],2) + scq[3]*powf(dQPdt[3][0],2);
-    A[0][1] = scq[0]*dQPdt[0][0]*dQPdt[0][1] + scq[1]*dQPdt[1][0]*dQPdt[1][1] 
+    A[0][1] = scq[0]*dQPdt[0][0]*dQPdt[0][1] + scq[1]*dQPdt[1][0]*dQPdt[1][1]
       + scq[2]*dQPdt[2][0]*dQPdt[2][1] + scq[3]*dQPdt[3][0]*dQPdt[3][1];
     A[1][0] = A[0][1];
     A[1][1] = scq[0]*powf(dQPdt[0][1],2) + scq[1]*powf(dQPdt[1][1],2)
@@ -416,10 +416,10 @@ inline bool velocities_are_dependent(		// return: v1, v2 dependent?
 	const Velocity& v1,			// input:  v1
 	const Velocity& v2,			// input:  v2
 	const double    tolerance,              // input: tolerance
-	double&         stat)                   // output: discriminant 
+	double&         stat)                   // output: discriminant
 {
     if( sign(v1(0)) * sign(v1(1)) * sign(v2(0)) * sign(v2(1)) < 0) return false;
-    register double x   = hypot(fabs(v1(0))-fabs(v2(0)), 
+    register double x   = hypot(fabs(v1(0))-fabs(v2(0)),
 				fabs(v1(1))-fabs(v2(1))),
 		    y   = hypot(v1(0),v1(1)),
 		    eps = tolerance * sqrt(norm_det);
@@ -432,19 +432,19 @@ inline bool velocities_are_dependent(		// return: v1, v2 dependent?
 int Torus::containsPoint(    // return:	    error flag (see below)
     const Position &Q,       // input:      (R,z,phi)
           Velocity &v1,      // output:	    (vR,vz,vphi)_1
-	  DB22     &D1,	     // output:     {d(R,z)/d(T1,T2)}_1    
-          Angles   &A1,      // output:     T    
+	  DB22     &D1,	     // output:     {d(R,z)/d(T1,T2)}_1
+          Angles   &A1,      // output:     T
           Velocity &v2,      // output:	    (vR,vz,vphi)_2
-          DB22     &D2,	     // output:     {d(R,z)/d(T1,T2)}_2       
-          Angles   &A2,      // output:     T    
-          bool     needA,    // input:      angles out?    
+          DB22     &D2,	     // output:     {d(R,z)/d(T1,T2)}_2
+          Angles   &A2,      // output:     T
+          bool     needA,    // input:      angles out?
           bool     toy,      // input:      toy angles?
           bool     useA,     // input:      use input angles?
-          double   delr)     // input:      tolerance in position 
+          double   delr)     // input:      tolerance in position
     const
-// Returns 1 if (R,z,phi) is ever hit by the orbit, and 0 otherwise. If the 
+// Returns 1 if (R,z,phi) is ever hit by the orbit, and 0 otherwise. If the
 // torus passes through the point given, this happens four times, in each case
-// with a different velocity. However, only two of these are independent, since 
+// with a different velocity. However, only two of these are independent, since
 // changing the sign of both vR and vz simultaneously gives the same orbit. For
 // each of these two both possible velocities and the determinant
 // | d(x,y,z)/d(Tr,Tl,phi) | is returned. The latter vanishes on the edge of the
@@ -460,9 +460,9 @@ int Torus::containsPoint(    // return:	    error flag (see below)
     cerr << "Warning: negative actions in containsPoint\n";
     return 0;
   }
-  // First: Special case of Jl=0. Doing it normally creates infinite loop. 
-  if(J(1)==0.){ 
-    if(Q(1)!=0.) return 0;   
+  // First: Special case of Jl=0. Doing it normally creates infinite loop.
+  if(J(1)==0.){
+    if(Q(1)!=0.) return 0;
     Angles Ang = 0.;
     PSPD tmp = Map(Ang), QP =0., JT, Jt, Jtry;
     register PSPT   QP3D, Jt3D, JT3D;
@@ -472,8 +472,8 @@ int Torus::containsPoint(    // return:	    error flag (see below)
     rmin=tmp(0);
     Ang[0]=Pi;   tmp = Map(Ang);
     rmax=tmp(0);
-    if(Q(0)<rmin || Q(0)>rmax) return 0;  
-    // Check that it's in range. If not...   
+    if(Q(0)<rmin || Q(0)>rmax) return 0;
+    // Check that it's in range. If not...
     Jt = PSPD(J(0),J(1),1.,0.);
     const int maxit1=100;
     int it=0;
@@ -496,29 +496,29 @@ int Torus::containsPoint(    // return:	    error flag (see below)
     }
     v1[0]    = QP(2);
     v1[1]    = QP(3);
-    v1[2]    = J(2)/QP(0); 
-    if(needA) {   
+    v1[2]    = J(2)/QP(0);
+    if(needA) {
       QP3D.Take_PSPD(QP);
       QP3D[2] = Q(2); QP3D[5] = v1(2);
       Jt3D = QP3D << (*PT) << (*TM); // find theta_phi
       Jt3D.Take_PSPD(Jt);
       Jt3D[2] = J(2); // just in case.
-    
+
       JT3D       = AM.Backward3DWithDerivs(Jt3D,dTdt);
       JT = JT3D.Give_PSPD();
       if(toy) {A1[0] = Jt3D(3); A1[1] = Jt3D(4); A1[2] = Jt3D(5);}
       else    {A1[0] = JT3D(3); A1[1] = JT3D(4); A1[2] = JT3D(5);}
-      A2 = A1; 
-    } else 
+      A2 = A1;
+    } else
       JT = AM.BackwardWithDerivs(Jt,dTdt);
 
     D1       = 0.;
     D1[0][0] = dQdt(0,0)/dTdt[0][0];
-    v2 = v1; 
+    v2 = v1;
     D2 = 0.;
     D2[0][0] = D1[0][0];
     return 1;
-  }  
+  }
 //------------------------------------------------------------------------------
 // If it isn't  the special case. Do this the hard way.
     const    int    maxit1=100,maxit2=32;
@@ -541,13 +541,13 @@ int Torus::containsPoint(    // return:	    error flag (see below)
     register PSPD   JT, Jt, Jtry;
     register PSPT   QP3D, Jt3D, JT3D;
     register double lam=0.5, lam1, det, JT3_0, det1,
-      rq   = Q(0)*Q(0) + Q(1)*Q(1),            
-      rtin = (delr)? delr : sqrt(rq)*tiny;          // tolerance in position 
+      rq   = Q(0)*Q(0) + Q(1)*Q(1),
+      rtin = (delr)? delr : sqrt(rq)*tiny;          // tolerance in position
 
-    
+
 
     Jt = PSPD(J(0),J(1),Pih,0.);                   // guess
-    if(useA) { //cerr << A1 << "\n"; 
+    if(useA) { //cerr << A1 << "\n";
       Jt[2] = A1[0]; Jt[3] = A1[1]; }     // if guess is given
     LevCof(Jt,Q,1.,1.,QP,chio,B,A,dQdt);           // find detc/ detc
     if(std::isnan(B(0))) return 0;
@@ -563,8 +563,8 @@ int Torus::containsPoint(    // return:	    error flag (see below)
 	  Jtry[2] = 0.; // give up
 	if(std::isnan(Jtry(3)) || std::isinf(Jtry(3)) || fabs(Jtry(3))>INT_MAX)
 	  Jtry[3] = 0.; // give up
-	if(fabs(Jtry(2))>100.) Jtry[2] -= TPi*int(Jtry(2)*iTPi); 
-	if(fabs(Jtry(3))>100.) Jtry[3] -= TPi*int(Jtry(3)*iTPi); 
+	if(fabs(Jtry(2))>100.) Jtry[2] -= TPi*int(Jtry(2)*iTPi);
+	if(fabs(Jtry(3))>100.) Jtry[3] -= TPi*int(Jtry(3)*iTPi);
 	//cerr << Jtry << "\n";
 	while (Jtry(2)< 0. ) Jtry[2] += TPi;
 	while (Jtry(3)< 0. ) Jtry[3] += TPi;
@@ -587,7 +587,7 @@ int Torus::containsPoint(    // return:	    error flag (see below)
 
     v1[0]    = QP(2);
     v1[1]    = QP(3);
-    v1[2]    = J(2)/QP(0); 
+    v1[2]    = J(2)/QP(0);
     if(needA) {
       QP3D.Take_PSPD(QP);
       QP3D[2] = Q(2); QP3D[5] = v1(2);
@@ -597,7 +597,7 @@ int Torus::containsPoint(    // return:	    error flag (see below)
       JT = JT3D.Give_PSPD();
       if(toy) {A1[0] = Jt3D(3); A1[1] = Jt3D(4); A1[2] = Jt3D(5);}
       else    {A1[0] = JT3D(3); A1[1] = JT3D(4); A1[2] = JT3D(5);}
-    } else 
+    } else
       JT = AM.BackwardWithDerivs(Jt,dTdt);
 
     D1[0][0] = dQdt(0,0)*dTdt[1][1] - dQdt(0,1)*dTdt[1][0];
@@ -606,17 +606,17 @@ int Torus::containsPoint(    // return:	    error flag (see below)
     D1[1][1] =-dQdt(1,0)*dTdt[0][1] + dQdt(1,1)*dTdt[0][0];
     D1      /= dTdt[0][0]*dTdt[1][1]-dTdt[0][1]*dTdt[1][0];
     det1     = fabs(Q(1)/Q(0)) * fabs(D1(0,0)*D1(1,1)-D1(0,1)*D1(1,0)) / rq;
-   
-    JT[2] = TPi-JT(2); 
+
+    JT[2] = TPi-JT(2);
     double Jt2_0 = Jt[2],
     Jt3_0 = Jt[3];
-// Try to find other independent velocity. 
+// Try to find other independent velocity.
 // It must not fulfill the criterion in the do-while loop
 
     if(Q(1) == 0.) {	// in symmetry plane, second pair of Vs is dependent.
 	v2 = v1; v2[0] *=-1.;
 	D2 = D1; D2[0][0] *=-1.; D2[0][1] *=-1.;
-	A2 = A1; A2[1] = (A2(1)>Pi)? -Pi+A2(1) : Pi+A2(1); 
+	A2 = A1; A2[1] = (A2(1)>Pi)? -Pi+A2(1) : Pi+A2(1);
 	return 1;
     }
     bool usedA=false;                  // used supplied guess
@@ -629,9 +629,9 @@ int Torus::containsPoint(    // return:	    error flag (see below)
 	lam   = 0.5;
 	do {
 	  if(useA && !usedA) {        // use supplied guess
-	    //cerr << A2 << "\n"; 
+	    //cerr << A2 << "\n";
 	    Jt[2] = A2[0]; Jt[3] = A2[1]; usedA = true;
-	  } else { 
+	  } else {
 	    Jt[2] = Jt2_0;           // Or take a shot based on other theta
 	    Jt[3] = Jt3_0 + Pi*hit[tried++];
 	  }
@@ -650,7 +650,7 @@ int Torus::containsPoint(    // return:	    error flag (see below)
 	    while (Jtry(2)> TPi) Jtry[2] -= TPi;
 	    while (Jtry(3)> TPi) Jtry[3] -= TPi;
             LevCof(Jtry,Q,1.,1.,QP,chi,Btry,Atry,dQdtry);
-	    
+
 	    if(chi<chio  && !std::isnan(Btry(0))) { // better
 	        lam *= 0.125;
 	        chio = chi;
@@ -663,7 +663,7 @@ int Torus::containsPoint(    // return:	    error flag (see below)
         }
         v2[0] = QP(2);
         v2[1] = QP(3);
-        v2[2] = J(2)/Q(0); 
+        v2[2] = J(2)/Q(0);
 	while(JT(3)>TPi) JT[3]-=TPi;
 	depend_tol = (tried<5)? 0.1 : (tried<10)? 0.05 : 0.01; // tolerance
 	if(chio<=rtin) {
@@ -686,7 +686,7 @@ int Torus::containsPoint(    // return:	    error flag (see below)
       QP3D[2] = Q(2); QP3D[5] = v2(2);
       Jt3D = QP3D << (*PT) << (*TM);       // find theta_phi
       Jt3D.Take_PSPD(Jt);  Jt3D[2] = J(2); // just in case.
-    
+
       JT3D  = AM.Backward3DWithDerivs(Jt3D,dTdt);
       JT    = JT3D.Give_PSPD();
       if(toy) {A2[0] = Jt3D(3); A2[1] = Jt3D(4); A2[2] = Jt3D(5);}
@@ -699,7 +699,7 @@ int Torus::containsPoint(    // return:	    error flag (see below)
     D2[1][0] = dQdt(1,0)*dTdt[1][1] - dQdt(1,1)*dTdt[1][0];
     D2[1][1] =-dQdt(1,0)*dTdt[0][1] + dQdt(1,1)*dTdt[0][0];
     D2      /= (dTdt[0][0]*dTdt[1][1]-dTdt[0][1]*dTdt[1][0]);
-    
+
     //if(tried>=64) cerr << D2;
 
     return 1;
@@ -723,7 +723,7 @@ void Torus::CheckLevCof(PSPD QP_aim, Angles A_in) {
   LevCof(Jt,QP_aim,1.,1.,sc,oQP,chio,B,A,dQPdt);
   //cerr << dQPdt;
   Jtry = Jt; Jtry[2] = A_in[0] + small;
-  
+
   LevCof(Jtry,QP_aim,1.,1.,sc,QP,chi,B,A,dQPdt);
   //for(int i=0;i!=4;i++) cerr << (QP[i]-oQP[i])/small << ' ';
   //cerr << '\n';
@@ -750,7 +750,7 @@ void Torus::CheckLevCof(Position Q_aim, Angles A_in) {
   //cerr << dQdt(0,0) << ' ' << dQdt(1,0) << ' ';
   Jtry = Jt; Jtry[2] = A_in[0] + small;
   LevCof(Jtry,Q_aim,1.,1.,QP,chi,B,A,dQdt);
-  cerr << -2*B(0) << ' ' 
+  cerr << -2*B(0) << ' '
        << (chi*chi-chio*chio)/small << '\n';
   //<< (QP(0)-oQP(0))/small << ' ' <<  (QP(1)-oQP(1))/small << '\n';
   Jtry = Jt; Jtry[3] = A_in[1] + small;
@@ -761,7 +761,7 @@ void Torus::CheckLevCof(Position Q_aim, Angles A_in) {
 
 ////////////////////////////////////////////////////////////////////////////////
 DB2 Torus::DistancetoPSP(const PSPD &QP_aim, double &scale, Angles &Aclosest) const
-// We'll use Levenberg-Marquardt to minimize 
+// We'll use Levenberg-Marquardt to minimize
 // [R-R(th)]^2 + [z-z(th)]^2 + scale^2 * ( [vR-vR(th)]^2 + [vz-vz(th)]^2 )
 {
   const    int    maxit=100;
@@ -796,8 +796,8 @@ DB2 Torus::DistancetoPSP(const PSPD &QP_aim, double &scale, Angles &Aclosest) co
     out = 0.;
     return out;
   }
-  
-  // find a starting point using a course grid 
+
+  // find a starting point using a course grid
   const int ngridr = 30, ngridz=30;
   Angles Atest;
   for(int i=0;i!=ngridr;i++) {
@@ -852,7 +852,7 @@ DB2 Torus::DistancetoPSP(const PSPD &QP_aim, double &scale, Angles &Aclosest) co
   Aclosest[0] = Jt[2]; Aclosest[1] = Jt[3];
   //cerr << QP_aim << ' ' << QP_best << '\n';
   if(chio < rtin) { out = 0.; return out; }
-  else { 
+  else {
     out[0] = hypot(QP_best(0)-QP_aim(0),QP_best(1)-QP_aim(1));
     out[1] = hypot(QP_best(2)-QP_aim(2),QP_best(3)-QP_aim(3));
     return out;
@@ -861,12 +861,12 @@ DB2 Torus::DistancetoPSP(const PSPD &QP_aim, double &scale, Angles &Aclosest) co
 
 
 ////////////////////////////////////////////////////////////////////////////////
-Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim, 
-				      Vector<double,4> &scales, 
+Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim,
+				      Vector<double,4> &scales,
 				      Angles &Aclosest) const
-// We'll use Levenberg-Marquardt to minimize 
-// (scale[0]*[R-R(th)])^2   + (scale[1]*[z-z(th)])^2 + 
-// (scale[2]*[vR-vR(th)])^2 + (scale[3]*[vz-vz(th)])^2 
+// We'll use Levenberg-Marquardt to minimize
+// (scale[0]*[R-R(th)])^2   + (scale[1]*[z-z(th)])^2 +
+// (scale[2]*[vR-vR(th)])^2 + (scale[3]*[vz-vz(th)])^2
 {
   const    int    maxit=100;
   const    double tiny=1.e-8;
@@ -886,7 +886,7 @@ Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim,
     //cerr << Rmin << ' ' << Rmax << ' ' << zmax << '\n';
     Angles tmpA = 0.; tmpA[0] = Pih;
     PSPD   tmpqp = MapfromToy(tmpA);
-    double tmpR2 = powf(0.5*(Rmax-Rmin),2), tmpz2 = zmax*zmax, 
+    double tmpR2 = powf(0.5*(Rmax-Rmin),2), tmpz2 = zmax*zmax,
       tmpvR2 = tmpqp(2)*tmpqp(2), tmpvz2 =tmpqp(3)*tmpqp(3);
     //cerr << tmpqp << ' ' <<  Rmin << ' ' << Rmax << ' ' << zmax << '\n';
     sc[0] = 1./sqrt(tmpR2);
@@ -905,8 +905,8 @@ Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim,
     out = 0.;
     return out;
   }
-  
-  // find a starting point using a course grid 
+
+  // find a starting point using a course grid
   const int ngridr = 30, ngridz=30;
   Angles Atest;
   for(int i=0;i!=ngridr;i++) {
@@ -914,7 +914,7 @@ Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim,
     for(int j=0;j!=ngridz;j++) {
       Atest[1] = TPi*j/double(ngridz);
       QP = MapfromToy(Atest);
-      chi = sc[0]*sc[0]*powf(QP(0)-QP_aim(0),2) + 
+      chi = sc[0]*sc[0]*powf(QP(0)-QP_aim(0),2) +
 	sc[1]*sc[1]*powf(QP(1)-QP_aim(1),2) +
 	sc[2]*sc[2]*powf(QP(2)-QP_aim(2),2) +
 	sc[3]*sc[3]*powf(QP(3)-QP_aim(3),2);
@@ -922,7 +922,7 @@ Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim,
 	Astart = Atest;
 	chio = chi;
       }
-      //if(chi<0.1) 
+      //if(chi<0.1)
       //std::cout << chi << ' ';
 	//else cerr << "0.1 ";
     }
@@ -966,7 +966,7 @@ Vector<double,4> Torus::DistancetoPSP(const PSPD &QP_aim,
   Aclosest[0] = Jt[2]; Aclosest[1] = Jt[3];
   //cerr << QP_aim << ' ' << QP_best << '\n';
   if(chio < rtin) { out = 0.; return out; }
-  else { 
+  else {
     out[0] = hypot(QP_best(0)-QP_aim(0),QP_best(1)-QP_aim(1));
     out[1] = hypot(QP_best(2)-QP_aim(2),QP_best(3)-QP_aim(3));
     return out;
@@ -1090,14 +1090,14 @@ double Torus::DistancetoRadius(const double R) const
     register PSPD     Jt, Jtry;
              Angles Ang = 0.;
 	     double rmin,rmax;
-	     
+
   // Avoid bugs causing crashes/loops
   if(J(0)<0. || J(1) < 0.) {
     cerr << "Warning: negative actions in DistancetoRadius\n";
     return 0;
   }
-    Ang[1] = Pih;    
-    rmin = (Map(Ang))(0);  // Questionable, but certainly 
+    Ang[1] = Pih;
+    rmin = (Map(Ang))(0);  // Questionable, but certainly
     Ang[0] = Pi; Ang[1] = 0.;
     rmax = (Map(Ang))(0);
     if(R<=rmax && R>=rmin) return 0.; // Added for a quicker, easier thing
@@ -1217,7 +1217,7 @@ void Torus::SOS_z(ostream& to, const double RSOS, const int Nthz) const
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
-int Torus::SOS_z(double* outz, double* outvz, 
+int Torus::SOS_z(double* outz, double* outvz,
 		 const double RSOS, const int Nthz) const
 {
   Jtroot = PSPD(J(0),J(1),0.,0.);
@@ -1247,17 +1247,18 @@ int Torus::SOS_z(double* outz, double* outvz,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Torus::AutoTorus(Potential * Phi, const Actions Jin, const double R0) {
-
-  IsoPar IP = 0.;
-  double Rc = Phi->RfromLc(Jin(1)+fabs(Jin(2)));
-  IP[1] = (R0)? sqrt(R0) : sqrt(Rc);
-  double dPdR,dPdz, atmp, btmp;
-  (*Phi)(Rc,0.,dPdR,dPdz);
-  btmp = (R0)? R0 : Rc;
-  atmp = (R0)? sqrt(R0*R0+Rc*Rc) : Rc*sqrt(2.);
-  IP[0] = sqrt(dPdR*atmp*powf(btmp+atmp,2.)/Rc);
-  IP[2] = fabs(Jin(2));
+void Torus::AutoTorus(Potential * Phi, const Actions Jin, const double R0,const IsoPar Ip) {
+  IsoPar IP = Ip;
+  if(IP==0.){
+    double Rc = Phi->RfromLc(Jin(1)+fabs(Jin(2)));
+    IP[1] = (R0)? sqrt(R0) : sqrt(Rc);
+    double dPdR,dPdz, atmp, btmp;
+    (*Phi)(Rc,0.,dPdR,dPdz);
+    btmp = (R0)? R0 : Rc;
+    atmp = (R0)? sqrt(R0*R0+Rc*Rc) : Rc*sqrt(2.);
+    IP[0] = sqrt(dPdR*atmp*powf(btmp+atmp,2.)/Rc);
+    IP[2] = fabs(Jin(2));
+  }
   GenPar SN;
   SN.MakeGeneric();
   GenPar s1(SN);
@@ -1277,7 +1278,7 @@ void Torus::AutoPTTorus(Potential *Phi, const Actions Jin, const double R0) {
   IP[2] = fabs(Jin(2));
   double tmp1 = pow(IP(1),2),       // b
     tmp2 = sqrt(tmp1*tmp1+1.);      // sqrt(b^2+r^2), note r=1
-  IP[0] = (IP(2)+Jin(1))*(tmp1+tmp2)*sqrt(tmp2); // sqrt(GM). Again, r=1 
+  IP[0] = (IP(2)+Jin(1))*(tmp1+tmp2)*sqrt(tmp2); // sqrt(GM). Again, r=1
   GenPar SN;
   SN.MakeGeneric();
   GenPar s1(SN);
@@ -1291,7 +1292,7 @@ void Torus::AutoPTTorus(Potential *Phi, const Actions Jin, const double R0) {
 
 void Torus::FindLimits() { // Approximate.
   Angles Ang = 0.;
-  Ang[1] = Pih;    
+  Ang[1] = Pih;
   Rmin = (MapfromToy(Ang))(0);
   Ang[0] = Pi;
   zmax = (MapfromToy(Ang))(1);

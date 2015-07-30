@@ -44,8 +44,8 @@
 #include "GeneratingFunction.h"
 #include "Potential.h"
 /**
-   \brief Fits parameters of canonical transformation and/or of toy map  
-   and/or the coefficients S_n of the generating function. 
+   \brief Fits parameters of canonical transformation and/or of toy map
+   and/or the coefficients S_n of the generating function.
  */
 int SbyLevMar(          // return:	error flag (see below)
     const Actions&,     // input:	Actions of Torus to be fit
@@ -81,10 +81,10 @@ int SbyLevMar(          // return:	error flag (see below)
 
 //------------------------------------------------------------------------------
 
-/** 
-    \brief Given output of SbyLevMar(), computes frequencies by orbit 
-    integration 
-*/ 
+/**
+    \brief Given output of SbyLevMar(), computes frequencies by orbit
+    integration
+*/
 int Omega(          	// return:	error flag (see below)
     Potential*,         // input:	pointer to Potential
     const Actions&,     // input:	J
@@ -103,9 +103,9 @@ int Omega(          	// return:	error flag (see below)
 
 //------------------------------------------------------------------------------
 
-/**  \brief given both output of SbyLevMar and an estimate of Omega with 
-     given uncertainty, computes dS/dJ and frequencies subject to   
-     the constraint of the given Omega and its uncertainty          
+/**  \brief given both output of SbyLevMar and an estimate of Omega with
+     given uncertainty, computes dS/dJ and frequencies subject to
+     the constraint of the given Omega and its uncertainty
 */
 int dSbyInteg(          // return:	error flag (see below)
     const Actions&,     // input:	Actions of Torus to be fit
@@ -127,7 +127,7 @@ int dSbyInteg(          // return:	error flag (see below)
 //                      -3		error in orbit integration (too long)
 //		       	-4		neg. Omega => reduce Energy tolerance
 //		       	-5		M^tM not pos.def. => something wrong
- 
+
 
 //------------------------------------------------------------------------------
 
@@ -185,7 +185,8 @@ int AllFit(		// return:	error flag (see below)
     const int     =200, // input:	max. tolerated steps on average per cell
     const double  =0.,  // input:	estimate of expected <H>
     const int     =24,  // input:	min No of theta (per dim) for 1. fit
-    const int     =0);	// input:	error output?
+    const int     =0,	// input:	error output?
+    const int=0);    // input: fix toy parameters
 
 //  meaning of return:	 0		everything seemed to go well
 //			-1		something wrong with input, usually

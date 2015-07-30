@@ -46,8 +46,8 @@ inline double Heff(const PSPD& QP, double dHdQP[4], Potential* Phi)
     dHdQP[2] = double(QP(2));
     dHdQP[3] = double(QP(3));
     if(std::isinf(QP(0))) return 0.5*(pow(dHdQP[2],2) +pow(dHdQP[3],2));
-    if(std::isinf(QP(1))) 
-      return 0.5*(pow(dHdQP[2],2) +pow(dHdQP[3],2)) 
+    if(std::isinf(QP(1)))
+      return 0.5*(pow(dHdQP[2],2) +pow(dHdQP[3],2))
 	     + Phi->Lzsquare()/(pow(QP(0),2));
     return 0.5*(pow(dHdQP[2],2) +pow(dHdQP[3],2))
 	   + Phi->eff(double(QP(0)),double(QP(1)),dHdQP[0],dHdQP[1]);
@@ -68,7 +68,7 @@ static void Deletion(const int M, double**A, double**B, double*a, double*b)
 ////////////////////////////////////////////////////////////////////////////////
 static int LevMarCof(        // return:        error flag (see below)
     const char     fit[3],   // Input:         what should be fit?
-    const Actions& J,        // Input:         Actions of orbit 
+    const Actions& J,        // Input:         Actions of orbit
     Potential*     Phi,      // Input:         pointer to Potential
     const int      mfit,     // Input:         number of parameters to be fit
     GenFncFit&     GF,       // Input:         generating function
@@ -88,7 +88,7 @@ on the meaning of the return value:
 definition of chi to be minimized w.r.t. the parameters:
 
            2                2          2          2
-        chi  = < [< H > - H]  >  =  < H  > - < H > 
+        chi  = < [< H > - H]  >  =  < H  > - < H >
 
              SUM_angles A(angles,..)
 with < A > = -----------------------   and H = H(angles, parameters p).
@@ -109,7 +109,7 @@ and (neglecting second derivatives of H, see Press et al.)
 
 Also
         |      2 |
-        | d chi  |  
+        | d chi  |
         | -----  | = 2 Sqrt{ SUM_k (b_k)^2 }.
 	| d p_k  |
 
@@ -124,7 +124,7 @@ t angles, q usual phase space co-ordinates, and p their conjugate momenta).
 3. (q,p) -> (Q,P)  by canonical transformation, parameters beta
 
 	                          2             2            2
-H(J,t)        = H_eff(Q,P) = 1/2 P  + Pot(Q) + J_phi / (2 * R ) 
+H(J,t)        = H_eff(Q,P) = 1/2 P  + Pot(Q) + J_phi / (2 * R )
 dH/dbeta      = dH_eff/d(Q,P) * d(Q,P)/dbeta
 dH/dalpha     = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dalpha
 dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
@@ -159,10 +159,10 @@ dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
 // 1. case: fit of the Sn
 //          bomb around the torus and sum up the derivatives
 //
-  
+
     if(fit[0]) {
         double  dHdj[2];
-        GenPar  dj1dS(GF.parameters()), dj2dS(GF.parameters()); 
+        GenPar  dj1dS(GF.parameters()), dj2dS(GF.parameters());
         for(i1=0; i1<GF.N_th1(); i1++)
         for(i2=0; i2<GF.N_th2(); i2++) {
 	    jt = GF.MapWithDerivs(J(0),J(1),i1,i2,dj1dS,dj2dS);
@@ -172,9 +172,9 @@ dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
 	        return -2;
 	    }
             QP = jt >> TM;
-	    //cerr <<"\n"<< QP << "\n"; 
+	    //cerr <<"\n"<< QP << "\n";
 	    QP = QP >> PT;
-	    //cerr << QP << "\n"; 
+	    //cerr << QP << "\n";
  	    if(fit[1]) TM.Derivatives(dqpdj, dqpdalfa);
 		else   TM.Derivatives(dqpdj);
             //if(fit[2]) PT.Derivatives(dQPdqp, dQPdbeta); // NB fix needed
@@ -210,7 +210,7 @@ dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
 		    akl[k][l] += dHda[k] * dHda[l];
 	    }
 	} // done bombing around the torus
-    } else { 
+    } else {
 //
 // 2. case: no fit of the Sn
 //          bomb around the torus and sum up the derivatives
@@ -222,16 +222,16 @@ dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
                 for(k=0;k<4;k++) { delete[] dqpdalfa[k]; delete[] dQPdbeta[k]; }
                 delete[] dHda; delete[] dHavda;
 	        return -2;
-	    }	    
+	    }
             QP = jt >> TM;
-	    //cerr << QP << " "; 
+	    //cerr << QP << " ";
 	    QP = QP >> PT;
 	    //cerr << QP << "\n";
-	    if(fit[1]) {         
+	    if(fit[1]) {
 	      TM.Derivatives(dqpdj, dqpdalfa);
-	      PT.Derivatives(dQPdqp); 
+	      PT.Derivatives(dQPdqp);
 	    }
-	    
+
 	    H = Heff(QP, dHdQP, Phi);
 	    if(fit[1])
                 for(j=0; j<4; j++)
@@ -273,14 +273,14 @@ dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
 	dchisq    += bk[k] * bk[k];
     }
     for(k=0; k<mfit; k++)
-	for(l=k; l<mfit; l++) 
-	    akl[l][k] = akl[k][l] = temp * akl[k][l] - dHavda[k] * dHavda[l]; 
+	for(l=k; l<mfit; l++)
+	    akl[l][k] = akl[k][l] = temp * akl[k][l] - dHavda[k] * dHavda[l];
     dchisq = 2. * sqrt(dchisq);
     for(k=0; k<4; k++) {
 	delete[] dqpdalfa[k];
 	delete[] dQPdbeta[k];
     }
-    
+
     delete[] dHda;
     delete[] dHavda;
     if(dchisq > dch_tol) { return -4;}
@@ -289,7 +289,7 @@ dH/dS_(n1,n2) = dH_eff/d(Q,P) * d(Q,P)/d(q,p) * d(q,p)/dj * dj/dS_(n1,n2)
 ////////////////////////////////////////////////////////////////////////////////
 
 static int ChirmsOnly(         // return:        error flag (see below)
-    const Actions&   J,        // Input:         Actions of orbit 
+    const Actions&   J,        // Input:         Actions of orbit
     Potential*       Phi,      // Input:         pointer to Potential
     const GenFncFit& GF,       // Input:         Generating function
     const ToyMap&    TM,       // Input:         toy-potential map
@@ -370,17 +370,17 @@ int SbyLevMar(               // return:        error flag (see below)
     int             iterations=0, mfit=0, F;
     double          chirms, dchisq, dchtry, temp, damp=1.,
                     H_av, *dA, *B, **AA, **AAtry;
-    register double H_av0, rHav, 
+    register double H_av0, rHav,
 		    Rc     = Phi->RfromLc(J(2)), 	// Rc = length scale
                     vc     = WDabs(J(2)) / Rc;		// vc = velocity scale
-		
+
     vec4 	    tp(TM.parameters()), tpy(tp),
                     tpmin(TM.lower_bounds(Rc,vc)),tpmax(TM.upper_bounds(Rc,vc));
     // if(PT.NumberofParameters()>0) {
 //       tpmin[0] = 0.666*tp[0];
 //       tpmax[0] = 1.5*tp[0];
 //       //tpmin[3] =0.; tpmax[3] =0.;
-//     } 
+//     }
 
     // STABILITY
     //tpmin[3] =0.; tpmax[3] =0.;
@@ -393,7 +393,7 @@ int SbyLevMar(               // return:        error flag (see below)
         else        { fit[1] = 1; mfit += TM.NumberofParameters(); }
     if(option%2 >= 1) fit[0] = 0;
         else        { fit[0] = 1; mfit += Sn.NumberofTerms(); }
-    dA    = new double[mfit];        // 
+    dA    = new double[mfit];        //
     B     = new double[mfit];        // The vectors and matrices
     AA    = new  double* [mfit];     // of derivatives required for
     AAtry = new  double* [mfit];     // Levenberg-Marquad
@@ -413,13 +413,13 @@ int SbyLevMar(               // return:        error flag (see below)
 	GF.set_parameters((Sn *= 0.5));
 	if((F=LevMarCof(fit,J,Phi,mfit,GF,TM,PT,mean_H,delta_H,dchisq,B,AA))
 	   ==-2)	{
-	  if(err) 
+	  if(err)
 	    cerr<<"SbyLevMar: init: still NEGATIVE ACT. -> set S_n=0.2*S_n\n";
 	  GF.set_parameters((Sn *= 0.2));
 	  if((F=LevMarCof(fit,J,Phi,mfit,GF,TM,PT,mean_H,delta_H,dchisq,B,AA))
 	     ==-2) {
-	    if(err)  
-	      cerr<<"SbyLevMar: init: still NEGATIVE ACT. -> set S_n=0.\n"; 
+	    if(err)
+	      cerr<<"SbyLevMar: init: still NEGATIVE ACT. -> set S_n=0.\n";
 	    GF.set_parameters((Sn = 0.));
 	    F=LevMarCof(fit,J,Phi,mfit,GF,TM,PT,mean_H,delta_H,dchisq,B,AA);
 	  }
@@ -433,12 +433,12 @@ int SbyLevMar(               // return:        error flag (see below)
       if(err)
           cerr<<" LevMarCof() failed\n";
         Deletion(mfit,AA,AAtry,dA,B);
-        return F; 
-    } 
-    if(err) 
+        return F;
+    }
+    if(err)
       cerr<<" lam, <H>, dH, dch = "
           <<lambda<<' ' <<mean_H<<' '<<delta_H<<' '<< dchisq //<<'\n';
-	//<<"  a=" << cpy 
+	//<<"  a=" << cpy
 	  <<"; b="<<tpy<<'\n';
 
 //##############################################################################
@@ -491,9 +491,9 @@ int SbyLevMar(               // return:        error flag (see below)
 	    negact++;
 	    if (err)
 	      cerr<<"SbyLevMar: it "<<iterations<<": NEG. ACTIONS;   "
-	        //<< cpy << 
+	        //<< cpy <<
 		" b=" << tpy <<'\n';
-	  } else 
+	  } else
 	    if(err)
 	    cerr<<"SbyLevMar: it "<<iterations<<": |dCHI^2/dA|>TOLERANCE\n";
 	  lambda *= 4.;
@@ -505,7 +505,7 @@ int SbyLevMar(               // return:        error flag (see below)
 	  if(err)
 	    cerr<<"SbyLevMar: it "<<iterations
 	    <<": lam, <H>, dH, dch = "<<lambda<<' '<<mean_H
-		<<' '<<delta_H<<' '<< dchisq//<<"  a="<< cpy 
+		<<' '<<delta_H<<' '<< dchisq//<<"  a="<< cpy
 		<<"; b="<<tpy<<'\n';
 	  lambda *= 0.5;
 	  //if(fit[2]) cp = PT.parameters();
@@ -525,7 +525,7 @@ int SbyLevMar(               // return:        error flag (see below)
         }
     }
     //if(fit[2]) PT.set_parameters(cp);
-    if(fit[1]) TM.set_parameters(tp); 
+    if(fit[1]) TM.set_parameters(tp);
     Deletion(mfit,AA,AAtry,dA,B);
     return iterations;
 }
@@ -566,8 +566,8 @@ inline void z0AddEquation(int*g, double** M, double* T1, double* T3,
     for(i=0; i<Mdim-1; i++)
       M[I][i] =-2.*sin( Sn.n1(i)*t1);
     M[I][Mdim-1]= time;
-    i = int(t1/dT);     // This grid enables us to check whether each cell 
-                        // in theta space has been visited    
+    i = int(t1/dT);     // This grid enables us to check whether each cell
+                        // in theta space has been visited
     if(i>=0 && i<Nr ) grid = (g[i]+=1);
     else                       grid = 0;
     if(Tdim==(I+=1)) z0NewTdim(M,T1,T3,Tdim);
@@ -592,9 +592,9 @@ inline void z0RemoveStrip(int*g, double**M, double*T1, double*T3, int*Kl,
 
 static int z0AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
 		    const GenFnc& GF, const PoiTra& PT, const ToyMap& TM,
-                    double& dtm, double**M, double*T1, double*T3, 
+                    double& dtm, double**M, double*T1, double*T3,
 		    int*Kl, int*g,
-		    int& I, int& K, int& Tdim, const int Nr, const int Mdim, 
+		    int& I, int& K, int& Tdim, const int Nr, const int Mdim,
 		    const int NMIN, int& integ, const int INTOL, const int err)
 {
     const double    Etol = 1.e-14,
@@ -608,7 +608,7 @@ static int z0AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
     register PSPT   jt3=Jt3>>GF, QP3;
     register double dt,dt1,dt2,dt3,time=0.,t1=Jt3(3),t3=Jt3(5),t3new,Lperp,u,
 		    dT=Pi/double(Nr);
-    if(jt3(0)<0.) jt3[0]=tiny; 
+    if(jt3(0)<0.) jt3[0]=tiny;
     QP3 = jt3 >> TM >> PT;
     //cerr << jt3(5) << ' ' << QP3(2);
     jt3    = QP3 << PT << TM;
@@ -628,7 +628,7 @@ static int z0AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
 	    jt3    = R.QP3D() << PT << TM;
 	    //cerr << jt3(5) << ' ' << (R.QP3D())(2) << '\n';
 	    if(INTOL<=integ++ || toruserrno) {
-		if(err && toruserrno) 
+		if(err && toruserrno)
 		    cerr<<" error in map, toruserrno="<<toruserrno<<'\n';
 		if(n<NMIN) {
 		    z0RemoveStrip(g,M,T1,T3,Kl,I,K,Nr,dT);
@@ -676,7 +676,7 @@ int z0dSbyInteg(               // return:     error flag (see below)
     const int IperCell,	     // Input:	    max tol steps on average per cell
     const int err)	     // Input:	    error output?
 //==============================================================================
-// meaning of return:  0       -> everything went ok 
+// meaning of return:  0       -> everything went ok
 //                    -1       -> N too small, e.g., due to:
 //                                - H>0 occured too often in backward ToyIsochrone
 //                                - orbit integrations stopped (too long)
@@ -688,7 +688,7 @@ int z0dSbyInteg(               // return:     error flag (see below)
              char   constraint=(dO<Om(0) && dO<Om(1) && dO>0.);
     const    int    Nm=12;
              int    *g, *Kl, I=0, K=0, integ=0, Tdim, xdim, Mdim,
-		    MAXHPOS=(Nr*Nr)/5, INTOL=Nr*Nr*IperCell; 
+		    MAXHPOS=(Nr*Nr)/5, INTOL=Nr*Nr*IperCell;
              double  **M, *T1, *T3, A=0.;
     register int    hpos=0, F, i, j, k, n, i1=0, i2=0;
              double dtm = 1.;
@@ -713,7 +713,7 @@ int z0dSbyInteg(               // return:     error flag (see below)
 // 2.  fill in the matrix M and vectors T1, T3 by orbit integrations
 // 2.1 add strips to fill the theta plane densely (with resolution Pi/Nr)
     for(i1=0; i1<Nr && !fail; i1++) if(!g[i1]) {
-	  // Make sure there's points everywhere on the grid (either start 
+	  // Make sure there's points everywhere on the grid (either start
 	  // point or gets orbit integrated to). 0 < theta < Pi.
         Jt3[3] = Pi*(i1+.6)/double(Nr);
         Jt3[4] = 0.;
@@ -722,11 +722,11 @@ int z0dSbyInteg(               // return:     error flag (see below)
         F=z0AddStrip(Jt3,Phi,Sn,GF,PT,TM,dtm,M,T1,T3,Kl,g,I,K,Tdim,Nr,Mdim,Nm,
 		   integ,INTOL,err);
         if(integ > INTOL) {
-	  if(err) cerr<<" too many time steps"; 
+	  if(err) cerr<<" too many time steps";
 	  fail = true; }
-	if(F) hpos++; 
+	if(F) hpos++;
         if(hpos++ > MAXHPOS) {
-	  if(err)cerr<<" too many map errors"; 
+	  if(err)cerr<<" too many map errors";
 	  fail = true; }
       }
 // 2.2 if omega is constrained, add equation
@@ -781,8 +781,8 @@ int z0dSbyInteg(               // return:     error flag (see below)
     if(CholeskyDecomposition(N,xdim)) {
         for(i=0; i<I; i++)    delete[] M[i];
         for(i=0; i<xdim; i++) delete[] N[i];
-	delete[] g; delete[] M; delete[] T1; delete[] T3; 
-	delete[] Kl; delete[] N; 
+	delete[] g; delete[] M; delete[] T1; delete[] T3;
+	delete[] Kl; delete[] N;
         return -5;
     }
     //cerr << "\n\n";
@@ -797,10 +797,10 @@ int z0dSbyInteg(               // return:     error flag (see below)
     for(n=k=0,i=Mdim; k<K; k++,i++)
 	for(L1[i]=0.; n<Kl[k]; n++)
 	    L1[i] += T1[n];
-    // Find vector V such that N V = L1 (original N, not the output of 
-    // CholeskyDecomposition, which is a halfway house to this) 
+    // Find vector V such that N V = L1 (original N, not the output of
+    // CholeskyDecomposition, which is a halfway house to this)
     CholeskySolution((const double**)N,xdim,L1); // Not standard CS either, this
-    for(n=k=0,chi[1]=0.; k<K; k++)               // returns answer (V) in L1, 
+    for(n=k=0,chi[1]=0.; k<K; k++)               // returns answer (V) in L1,
       for(;n<Kl[k];n++) {                        // not in a separate vector.
 	    temp = L1[Mdim+k];
             for(i=0; i<Mdim; i++)
@@ -815,7 +815,7 @@ int z0dSbyInteg(               // return:     error flag (see below)
     chi[2] = 0.;
     //Om[1]  = 0.; //Leave unchanged
     for(i=0; i<Mdim-1; i++)
-      Ap.dSdJ2(i,0.); 
+      Ap.dSdJ2(i,0.);
     //      3.6 Solve for Omega_phi, dS/dJphi, phases_phi
     for(i=0; i<Mdim; i++)
 	for(L3[i]=0.,n=0; n<I; n++)
@@ -835,18 +835,18 @@ int z0dSbyInteg(               // return:     error flag (see below)
     Om[2]  = L3[Mdim-1];
     for(i=0; i<Mdim-1; i++) {
       //cerr << i << ' ' << L3[i] << "\t\t";
-      Ap.dSdJ3(i,L3[i]); 
+      Ap.dSdJ3(i,L3[i]);
     }
     if(err) cerr<<", and eqs. solved\nchi = " << chi << "\n";
 
     for(i=0; i<I; i++)    delete[] M[i];
     for(i=0; i<xdim; i++) delete[] N[i];
     delete[] g; delete[] M; delete[] T1; delete[] T3; delete[] Kl;
-    delete[] N; delete[] L1; delete[] L3; 
+    delete[] N; delete[] L1; delete[] L3;
     if(Om(0)<0. || Om(1)<0.) return -4;
     if(Ap.dSdJ1().maxS()>1.f || Ap.dSdJ2().maxS()>1.f) return -5;
     return 0;
-}	   
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -889,8 +889,8 @@ inline void AddEquation(int**g, double** M, double* T1, double* T2, double* T3,
     for(i=0; i<Mdim-1; i++)
 	M[I][i] =-2.*sin( Sn.n1(i)*t1+Sn.n2(i)*t2 );
     M[I][Mdim-1]= time;
-    i = int(t1/dT);     // This grid enables us to check whether each cell 
-    j = int(t2/dT);     // in thetaR/z space has been visited    
+    i = int(t1/dT);     // This grid enables us to check whether each cell
+    j = int(t2/dT);     // in thetaR/z space has been visited
     if(i>=0 && i<Nr && j>=0 && j<Nr) grid = (g[i][j]+=1);
     else                             grid = 0;
     if(Tdim==(I+=1)) NewTdim(M,T1,T2,T3,Tdim);
@@ -916,9 +916,9 @@ inline void RemoveStrip(int**g, double**M, double*T1, double*T2, double*T3, int*
 
 static int AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
 		    const GenFnc& GF, const PoiTra& PT, const ToyMap& TM,
-                    double& dtm, double**M, double*T1, double*T2, double*T3, 
+                    double& dtm, double**M, double*T1, double*T2, double*T3,
 		    int*Kl, int**g,
-		    int& I, int& K, int& Tdim, const int Nr, const int Mdim, 
+		    int& I, int& K, int& Tdim, const int Nr, const int Mdim,
 		    const int NMIN, int& integ, const int INTOL, const int err)
 {
   //if(err) cerr << " integ in  " << integ<< "\n";
@@ -941,14 +941,14 @@ static int AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
 	if(err) cerr<<"error in map, toruserrno="<<toruserrno<<'\n';
         return 1;
     }
-    
+
     AddEquation(g,M,T1,T2,T3,I,Tdim,Nr,Mdim,Sn,t1,t2,t3,dT,time,grid);
     Record3D R(QP3,Phi);
     R.set_tolerance(Etol);
     R.set_maxstep(dtm);
     for(n=0; (t1<Pi && t2<Pi && !grid) || n<NMIN; ) {
-      //if(t1<Pi && t2<Pi && !grid) 
-      //cerr << "This is a surprise" << t1 << ' ' << t2 << "\n" 
+      //if(t1<Pi && t2<Pi && !grid)
+      //cerr << "This is a surprise" << t1 << ' ' << t2 << "\n"
       //     << "See Fit.cc, AddStrip() and see if you can understand it\n";
       for(dt=0.; dt<dT; ) {
 	R.stepRK_by(dtime);
@@ -958,7 +958,7 @@ static int AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
 	    //cerr << jt3 << "\n";
 	    //if(!(integ%100)) cerr << integ <<" "<<  R.QP3D() << " " << dtime<< "\n";
 	    if(INTOL<=integ++ || toruserrno) {
-		if(err && toruserrno) 
+		if(err && toruserrno)
 		    cerr<<" error in map, toruserrno="<<toruserrno<<'\n';
 		if(n<NMIN) {
 		  RemoveStrip(g,M,T1,T2,T3,Kl,I,K,Nr,dT);
@@ -994,7 +994,7 @@ static int AddStrip(const PSPT& Jt3, Potential* Phi, const GenPar& Sn,
     Kl[K++]=I;
     return 0;
 }
-	   
+
 ////////////////////////////////////////////////////////////////////////////////
 int dSbyInteg(               // return:     error flag (see below)
     const Actions& J,        // Input:      Actions of Torus to be fit
@@ -1010,7 +1010,7 @@ int dSbyInteg(               // return:     error flag (see below)
     const int IperCell,	     // Input:	    max tol steps on average per cell
     const int err)	     // Input:	    error output?
 //==============================================================================
-// meaning of return:  0       -> everything went ok 
+// meaning of return:  0       -> everything went ok
 //                    -1       -> N too small, e.g., due to:
 //                                - H>0 occured too often in backward ToyIsochrone
 //                                - orbit integrations stopped (too long)
@@ -1023,10 +1023,10 @@ int dSbyInteg(               // return:     error flag (see below)
     int F = z0dSbyInteg(J,Phi,Nr,Sn,PT,TM,dO,Om,chi,Ap,IperCell,err);
     return F;
   }
-             bool   constraint=false; //History 
+             bool   constraint=false; //History
     const    int    Nm=12;
              int    **g, *Kl, I=0, K=0, integ=0, Tdim, xdim, Mdim,
-		    MAXHPOS=(Nr*Nr)/5, INTOL=Nr*Nr*IperCell; 
+		    MAXHPOS=(Nr*Nr)/5, INTOL=Nr*Nr*IperCell;
              double  **M, *T1, *T2, *T3, A=0.;
     register int    hpos=0, F, i, j, k, n, i1=0, i2=0;
              double dtm = 1.;
@@ -1056,9 +1056,9 @@ int dSbyInteg(               // return:     error flag (see below)
     bool fail=false;
 // 2.  fill in the matrix M and vectors T1, T2 by orbit integrations
 // 2.1 add strips to fill the theta plane densely (with resolution Pi/Nr)
-    for(i2=0; i2<Nr && !fail; i2++) 
+    for(i2=0; i2<Nr && !fail; i2++)
       for(i1=0; i1<Nr  && !fail; i1++) if(!g[i1][i2]) {
-	  // Make sure there's points everywhere on the grid (either start 
+	  // Make sure there's points everywhere on the grid (either start
 	  // point or gets orbit integrated to). 0 < theta < Pi.
         Jt3[3] = Pi*(i1+.6)/double(Nr);
         Jt3[4] = Pi*(i2+.6)/double(Nr);
@@ -1066,11 +1066,11 @@ int dSbyInteg(               // return:     error flag (see below)
         F=AddStrip(Jt3,Phi,Sn,GF,PT,TM,dtm,M,T1,T2,T3,Kl,g,I,K,Tdim,Nr,Mdim,Nm,
 		   integ,INTOL,err);
         if(integ > INTOL) {
-	  if(err) cerr<<" too many time steps "<< integ << ' ' << i1 << i2 <<'\n'; 
+	  if(err) cerr<<" too many time steps "<< integ << ' ' << i1 << i2 <<'\n';
 	  fail = true;}
-	if(F) hpos++; 
+	if(F) hpos++;
         if(hpos++ > MAXHPOS) {
-	  if(err)cerr<<" too many map errors"; 
+	  if(err)cerr<<" too many map errors";
 	  fail = true;}
 	}
 // 2.2 if omega is constrained, add equation
@@ -1084,12 +1084,12 @@ int dSbyInteg(               // return:     error flag (see below)
 //	I+=1;
 //    }
  // 2.3 compute number of unknowns, abort if more than half number of equations
-    //for(i=0;i!=I;i++) cerr << i <<' ' << T3[i]<< '\n'; 
+    //for(i=0;i!=I;i++) cerr << i <<' ' << T3[i]<< '\n';
     xdim = K+Mdim;
     if(I<2*xdim) {
         for(i=0; i<Nr; i++) delete[] g[i];
 	for(i=0; i<I; i++)  delete[] M[i];
-	delete[] g; delete[] M; delete[] T1; delete[] T2; delete[] T3; 
+	delete[] g; delete[] M; delete[] T1; delete[] T2; delete[] T3;
 	delete[] Kl;
 	if(err) cerr<<"  "<<xdim<<" unknowns in "<<I<<" equations\n";
         return -1;
@@ -1129,8 +1129,8 @@ int dSbyInteg(               // return:     error flag (see below)
         for(i=0; i<Nr; i++)   delete[] g[i];
 	for(i=0; i<I; i++)    delete[] M[i];
         for(i=0; i<xdim; i++) delete[] N[i];
-	delete[] g; delete[] M; delete[] T1; 
-	delete[] T2; delete[] T3; delete[] Kl; delete[] N; 
+	delete[] g; delete[] M; delete[] T1;
+	delete[] T2; delete[] T3; delete[] Kl; delete[] N;
         return -5;
     }
     if(err) cerr<<", N decomposed";
@@ -1152,10 +1152,10 @@ int dSbyInteg(               // return:     error flag (see below)
     for(n=k=0,i=Mdim; k<K; k++,i++)
 	for(L1[i]=0.; n<Kl[k]; n++)
 	    L1[i] += T1[n];
-    // Find vector V such that N V = L1 (original N, not the output of 
-    // CholeskyDecomposition, which is a halfway house to this) 
+    // Find vector V such that N V = L1 (original N, not the output of
+    // CholeskyDecomposition, which is a halfway house to this)
     CholeskySolution((const double**)N,xdim,L1); // Not standard CS either, this
-    for(n=k=0,chi[1]=0.; k<K; k++)               // returns answer (V) in L1, 
+    for(n=k=0,chi[1]=0.; k<K; k++)               // returns answer (V) in L1,
       for(;n<Kl[k];n++) {                        // not in a separate vector.
 	    temp = L1[Mdim+k];
             for(i=0; i<Mdim; i++)
@@ -1185,7 +1185,7 @@ int dSbyInteg(               // return:     error flag (see below)
     Om[1]  = L2[Mdim-1];
     for(i=0; i<Mdim-1; i++){
       //cerr << i << ' ' << L2[i] << "\t";
-      Ap.dSdJ2(i,L2[i]); 
+      Ap.dSdJ2(i,L2[i]);
     }
     // 3.6 Solve for Omega_phi, dS/dJphi, phases_phi
     for(i=0; i<Mdim; i++)
@@ -1206,10 +1206,10 @@ int dSbyInteg(               // return:     error flag (see below)
     Om[2]  = L3[Mdim-1];
     for(i=0; i<Mdim-1; i++) {
       //cerr << i << ' ' << L3[i] << "\t\t";
-      Ap.dSdJ3(i,L3[i]); 
+      Ap.dSdJ3(i,L3[i]);
     }
     if(err) cerr<<", and eqs. solved\nchi = " << chi << "\n";
-    
+
     for(i=0; i<Nr; i++)   delete[] g[i];
     for(i=0; i<I; i++)    delete[] M[i];
     for(i=0; i<xdim; i++) delete[] N[i];
@@ -1344,12 +1344,13 @@ int AllFit(	            // return:	error flag (see below)
     double	  &Hav,     // output:	mean H
     Errors        &d, 	    // output:	actual |dJ|/|J| & chirms of angle fits
     const int     type,     // input:   Type of Fit (Full (0)/Half(1))
-    const bool    safe,     // input:   Safe (vary one thing at a time) fit? 
+    const bool    safe,     // input:   Safe (vary one thing at a time) fit?
     const int     Nta,      // input:   Number of tailorings
     const int     ipc,	    // input:   max tol steps on average per cell
     const double  eH,       // input:	estimate of expected mean H
     const int     Nth,	    // input:	min. No of theta per dimension
-    const int     err)	    // input:	error output?
+    const int     err,	    // input:	error output?
+    const int     fixtoy)   // fix toy parameters
 {
 
   const    int    Ni0 = 10;            // max. No of iteration in 0. fit
@@ -1366,35 +1367,37 @@ int AllFit(	            // return:	error flag (see below)
     Ni2 = (Nta)? (Ni-Ni1)/Nta : Ni-Ni1,// max. No of iteration in 2. fit
     n1 = fmax(Nth, 6*(SN.NumberofN1()/4+1)),
     n2 = fmax(Nth, 6*(SN.NumberofN2()/4+1)),
-    nrs= Nrs, F, sf=(safe)? 2 : 0;
+    nrs= Nrs, F, sf=(safe || fixtoy)? 2 : 0;
   register double tl9=0.95*tol, fac=1., Jabs, tlH, tlC, rs;
   int    ngA;
-  double  tailorparam = (J(0) > J(1) && J(1))? J(0)/J(1) : 
+  double  tailorparam = (J(0) > J(1) && J(1))? J(0)/J(1) :
                        (J(1) > J(0) && J(0))? J(1)/J(0) : 1;
   double ta = ta0*tailorparam, tb = tb0*tailorparam, off = off0*tailorparam;
 
   double l,dH,dO,dOp,odJ;
   GenPar oSN;
   // Prepare for fit.
-  if(Ni1<1 || J(0)<=0. || J(1)<0. ) return -1; // bad input 
+  if(Ni1<1 || J(0)<=0. || J(1)<0. ) return -1; // bad input
   Jabs = (J(0) && J(1))? sqrt(J(0)*J(1)) : J(0) + J(1);  // Typical Action
-  
+
   Phi->set_Lz(J(2));
-  
+
   if(J(1) == 0.) SN.Jz0(); // remove n_l != 0 terms
 
 //----------------------------------------------------------------------------
 // pre-fit  (no fit yet of the Sn)
 //
   if(err) cerr<<" 0. Fit of ToyPar & CanPar\n"; // NOTE 0 below: temporary
-  F = SbyLevMar(J,Phi,5,n1,n2,Ni0,BIG,0.,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-  // Function (above) which does the Levenberg-Marquad iteration
-  // return value is #iterations or negative number for error
-  if(F<0) { 
-    if(err) cerr<<" SbyLevMar() returned "<<F<<'\n';
-    if(F== -3) return -4;
-    return -1; 
-  }
+  if(!fixtoy){
+    F = SbyLevMar(J,Phi,5,n1,n2,Ni0,BIG,0.,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
+      // Function (above) which does the Levenberg-Marquad iteration
+      // return value is #iterations or negative number for error
+      if(F<0) {
+        if(err) cerr<<" SbyLevMar() returned "<<F<<'\n';
+        if(F== -3) return -4;
+        return -1;
+      }
+    }
 //----------------------------------------------------------------------------
 // first fit
 //
@@ -1406,14 +1409,14 @@ int AllFit(	            // return:	error flag (see below)
     F = SbyLevMar(J,Phi,4+sf,n1,n2,Ni1,tlH,tlC,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
   } else  //    otherwise don't constrain dH
     F = SbyLevMar(J,Phi,4+sf,n1,n2,Ni1,BIG,tl1,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-  if(F<0) { 
+  if(F<0) {
     if(err) {cerr<<" 1. Fit: max. "<<Ni1<<" iterations.\n";
       cerr<<" SbyLevMar() returned "<<F<<'\n';}
     if(F== -3) return -4;
-    return -1; 
+    return -1;
   }
-  
-//----------------------------------------------------------------------------  
+
+//----------------------------------------------------------------------------
 //    Estimate Omega and hence |dJ|/|J| from Orbit Integration
 //  We use a least squares fit for omega R and l; omega phi = mean (Lz/R^2)
   if(type==1) { // if no Angle Fit
@@ -1422,7 +1425,7 @@ int AllFit(	            // return:	error flag (see below)
     if(F && F!=-1 && type==1) F = Omega(Phi,J,SN,PT,TM,Pi,Pih,32.*Pi,Om,dO,dOp);
     if(F || Om(0)<Om(2) || (Om(1)<Om(2) && J(1)) ) {
       Om = Phi->KapNuOm(Phi->RfromLc(WDabs(J(2))));
-      dO = Om(1);  
+      dO = Om(1);
     } else {
       if(!J(1)) Om[1] = (Phi->KapNuOm(Phi->RfromLc(WDabs(J(2)))))(1);
       rs   = NearResonant(Om);
@@ -1435,7 +1438,7 @@ int AllFit(	            // return:	error flag (see below)
   fac  = 1. / ( hypot(Om(0),Om(1))*Jabs );
   d[0] = dH*fac;
 
-//---------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------
 //    If fit satisfactory, determine the dS/dJ for the angle map and Omega
 //    or if we have no idea what omega is, try another way of finding it
   bool fail = false, tryang=false;
@@ -1444,7 +1447,7 @@ int AllFit(	            // return:	error flag (see below)
     if(err) cerr<<" Fit of dS/dJi.\n";
     while( ((2*nrs-1)*nrs) <= OD*(2*nrs+SN.NumberofTerms())) nrs++;
     if(!J(1)) nrs = OD*(SN.NumberofTerms());
-    F = dSbyInteg(J,Phi,nrs,SN,PT,TM,dO,Om,d,AP,ipc,err);      
+    F = dSbyInteg(J,Phi,nrs,SN,PT,TM,dO,Om,d,AP,ipc,err);
     if(F) {
       if(err) cerr<<" dSbyInteg() returned "<<F<<'\n';
       fail = true;
@@ -1484,19 +1487,19 @@ int AllFit(	            // return:	error flag (see below)
     SN.tailor(ta,tb,Max);
     SN.cut(off);
   } else tryang = false;
-  if(J(1) == 0.) SN.Jz0(); 
+  if(J(1) == 0.) SN.Jz0();
   n1=fmax(Nth, 6*(SN.NumberofN1()/4+1));
   n2=fmax(Nth, 6*(SN.NumberofN2()/4+1));
   if(l>l0) { l/=256; if(l<l0) l=l0; }
   tlH = dH*tl9/d(0);
   tlC = (Om(0)*J(0) + Om(1)*J(1)) * tl8;
   F=SbyLevMar(J,Phi,4+sf,n1,n2,Ni2,tlH,tlC,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-  if(F<0) { 
+  if(F<0) {
     if(err) {cerr<<" dJ="<<d(0)<<" --> 2. Fit: tailor set of Sn, max. "
 		 <<Ni2<<" iterations.\n";
       cerr<<" SbyLevMar() returned "<<F<<'\n';}
     if(F== -3) return -4;
-    return -1; 
+    return -1;
   }
   if((d[0]=dH*fac)>odJ) {
     if(err) cerr << "Tailored set not an improvement. Reverting\n";
@@ -1516,10 +1519,10 @@ int AllFit(	            // return:	error flag (see below)
       oSN = SN;
       odJ = d[0];
       if(!tryang) {
-	if(i%2) 
+	if(i%2)
 	  SN.edgetailor(0.25,Max);
 	if(!i) SN.tailor(0.,tb*=0.1f,Max);
-	else SN.tailor(0.,-1,Max); // always add new terms 
+	else SN.tailor(0.,-1,Max); // always add new terms
       } else tryang = false;
       if(J(1) == 0.) SN.Jz0();
       if(i==2 || i==6) Ni2 = (Ni2<=4)? Ni2 : (Ni2<8)? 4 : Ni2/2;
@@ -1529,12 +1532,12 @@ int AllFit(	            // return:	error flag (see below)
       n2=fmax(Nth, 6*(SN.NumberofN2()/4+1));
       tlH = dH*tl9/d(0);
       F=SbyLevMar(J,Phi,4+sf,n1,n2,Ni2,tlH,tlC,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-      if(F<0) { 
+      if(F<0) {
 	if(err) {cerr<<" dJ="<<d(0)<<" --> again tailor set of SN, max. "
 		     <<Ni2<<" iterations.\n";
 	  cerr<<" SbyLevMar() returned "<<F<<'\n';}
 	if(F== -3) return -4;
-	return -1; 
+	return -1;
       }
     }
     if((d[0]=dH*fac)<tol || i == (Nta-2)-1) {
@@ -1542,9 +1545,9 @@ int AllFit(	            // return:	error flag (see below)
       if(type==1) { // if no Angle Fit
 	F = Omega(Phi,J,SN,PT,TM,Pi,0.,64.*Pi,Om,dO,dOp);
 	if(F && F!=-1) F = Omega(Phi,J,SN,PT,TM,Pih,0.,32.*Pi,Om,dO,dOp);
-	if(F || Om(0)<Om(2) || (Om(1)<Om(2) && J(1)) ) {                       
+	if(F || Om(0)<Om(2) || (Om(1)<Om(2) && J(1)) ) {
 	  Om = Phi->KapNuOm(Phi->RfromLc(WDabs(J(2))));
-	  dO = Om(1);  
+	  dO = Om(1);
 	} else {
 	  if(!J(1)) Om[1] = (Phi->KapNuOm(Phi->RfromLc(WDabs(J(2)))))(1);
 	  rs   = NearResonant(Om);
@@ -1583,7 +1586,7 @@ int AllFit(	            // return:	error flag (see below)
 	d[0]= dH*fac;
 	if(d(0) < tol) done=true;
 	if(err) cerr<<" dJ = "<<d(0)<<'\n';
-      } 
+      }
     } else tryang = false;
   }
 //---------- END LOOP ----------------------------------------------------------
@@ -1620,20 +1623,20 @@ int LowJzFit(	            // return:	error flag (see below)
   if(J(1) == 0.) {
     if(Ni>800)
       return AllFit(J,Phi,tol,Max,Ni,OD,Nrs,PT,TM,SN,AP,
-		    Om,Hav,d,type,false,Ni-3,ipc,eH,Nth,err); 
-    else 
+		    Om,Hav,d,type,false,Ni-3,ipc,eH,Nth,err,0.);
+    else
       return AllFit(J,Phi,tol,Max,800,OD,Nrs,PT,TM,SN,AP,
-		    Om,Hav,d,type,false,100,ipc,eH,Nth,err); // Let it run on
+		    Om,Hav,d,type,false,100,ipc,eH,Nth,err,0.); // Let it run on
   }
   int F;
   double tolJz0 = tol*J(1)/J(0); // Alter tolerance for planar fit
   Actions Jz0=J; Jz0[1] = 0.;
   F = AllFit(Jz0,Phi,tolJz0,Max,Ni,OD,Nrs,PT,TM,SN,AP,
-  	     Om,Hav,d,type,false,25,ipc,eH,Nth,err);// Orbit in plane, precise
+  	     Om,Hav,d,type,false,25,ipc,eH,Nth,err,0.);// Orbit in plane, precise
   int nadd = 4 + SN.NumberofTerms()/10;
   SN.addn1eq0(nadd);  // add terms with n1=0
   return AllFit(J,Phi,tol,Max,Ni,OD,Nrs,PT,TM,SN,AP,
-		Om,Hav,d,type,false,Nta,ipc,eH,Nth,err); 
+		Om,Hav,d,type,false,Nta,ipc,eH,Nth,err,0.);
 
 }
 
@@ -1679,17 +1682,17 @@ int PTFit(	            // return:	error flag (see below)
     nrs= Nrs, F;
   register double tl9=0.95*tol, fac=1., Jabs, tlH, tlC, rs;
   int    ngA;
-  double  tailorparam = (J(0) > J(1) && J(1))? J(0)/J(1) : 
+  double  tailorparam = (J(0) > J(1) && J(1))? J(0)/J(1) :
                        (J(1) > J(0) && J(0))? J(1)/J(0) : 1;
   double ta = ta0*tailorparam, tb = tb0*tailorparam, off = off0*tailorparam;
 
   double l,dH,dO,dOp,odJ;
-  
+
   GenPar oSN;
   // Prepare for fit.
-  if(Ni1<1 || J(0)<0. || J(1)<0. ) return -1; // bad input 
+  if(Ni1<1 || J(0)<0. || J(1)<0. ) return -1; // bad input
   Jabs = (J(0) && J(1))? sqrt(J(0)*J(1)) : J(0) + J(1);  // Typical Action
-  
+
   Phi->set_Lz(J(2));
 
 
@@ -1712,10 +1715,10 @@ int PTFit(	            // return:	error flag (see below)
       SN.cut(0.); // point transform enough. Om_phi wrong, but it'll do
       AP = AngPar(SN,SN,SN);
       return 0;
-    }  
+    }
   }
 
-  
+
   int sf = 2; // 0 (not safe) or 2 (safe)
 
 //----------------------------------------------------------------------------
@@ -1725,10 +1728,10 @@ int PTFit(	            // return:	error flag (see below)
   F = SbyLevMar(J,Phi,5+sf,n1,n2,Ni0,BIG,0.,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
   // Function (above) which does the Levenberg-Marquad iteration
   // return value is #iterations or negative number for error
-  if(F<0) { 
+  if(F<0) {
     if(err) cerr<<" SbyLevMar() returned "<<F<<'\n';
     if(F== -3) return -4;
-    return -1; 
+    return -1;
   }
 //----------------------------------------------------------------------------
 // first fit
@@ -1746,16 +1749,16 @@ int PTFit(	            // return:	error flag (see below)
       F = SbyLevMar(J,Phi,6,n1,n2,Ni1,BIG,tl1,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
     F = SbyLevMar(J,Phi,5+sf,n1,n2,Ni1,BIG,tl1,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
   }
-  if(F<0) { 
+  if(F<0) {
     if(err) {cerr<<" 1. Fit: max. "<<Ni1<<" iterations.\n";
       cerr<<" SbyLevMar() returned "<<F<<'\n';}
     if(F== -3) return -4;
-    return -1; 
+    return -1;
   }
 
 
-  
-//----------------------------------------------------------------------------  
+
+//----------------------------------------------------------------------------
 //    Estimate Omega and hence |dJ|/|J| from Orbit Integration
 //  We use a least squares fit for omega R and l; omega phi = mean (Lz/R^2)
   if(type==1) { // if no Angle Fit
@@ -1764,7 +1767,7 @@ int PTFit(	            // return:	error flag (see below)
     if(F && F!=-1 && type==1) F = Omega(Phi,J,SN,PT,TM,Pi,Pih,32.*Pi,Om,dO,dOp);
     if(F || Om(0)<Om(2) || (Om(1)<Om(2) && J(1)) ) {
       Om = Phi->KapNuOm(Phi->RfromLc(WDabs(J(2))));
-      dO = Om(1);  
+      dO = Om(1);
     } else {
       if(!J(1)) Om[1] = (Phi->KapNuOm(Phi->RfromLc(WDabs(J(2)))))(1);
       rs   = NearResonant(Om);
@@ -1777,7 +1780,7 @@ int PTFit(	            // return:	error flag (see below)
   fac  = 1. / ( hypot(Om(0),Om(1))*Jabs );
   d[0] = dH*fac;
 
-//---------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------
 //    If fit satisfactory, determine the dS/dJ for the angle map and Omega
 //    or if we have no idea what omega is, try another way of finding it
   bool fail = false;
@@ -1785,7 +1788,7 @@ int PTFit(	            // return:	error flag (see below)
     if(err) cerr<<" Fit of dS/dJi.\n";
     while( ((2*nrs-1)*nrs) <= OD*(2*nrs+SN.NumberofTerms())) nrs++;
     if(!J(1)) nrs = OD*(SN.NumberofTerms());
-    F = dSbyInteg(J,Phi,nrs,SN,PT,TM,dO,Om,d,AP,ipc,err);      
+    F = dSbyInteg(J,Phi,nrs,SN,PT,TM,dO,Om,d,AP,ipc,err);
     if(F) {
       if(err) cerr<<" dSbyInteg() returned "<<F<<'\n';
       fail = true;
@@ -1831,12 +1834,12 @@ int PTFit(	            // return:	error flag (see below)
   tlH = dH*tl9/d(0);
   tlC = (Om(0)*J(0) + Om(1)*J(1)) * tl8;
   F=SbyLevMar(J,Phi,4+sf,n1,n2,Ni2,tlH,tlC,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-  if(F<0) { 
+  if(F<0) {
     if(err) {cerr<<" dJ="<<d(0)<<" --> 2. Fit: tailor set of Sn, max. "
 		 <<Ni2<<" iterations.\n";
       cerr<<" SbyLevMar() returned "<<F<<'\n';}
     if(F== -3) return -4;
-    return -1; 
+    return -1;
   }
   if((d[0]=dH*fac)>odJ) {
     if(err) cerr << "Tailored set not an improvement. Reverting\n";
@@ -1854,10 +1857,10 @@ int PTFit(	            // return:	error flag (see below)
     if((d[0]=dH*fac)>=tol) {
       oSN = SN;
       odJ = d[0];
-      if(i%2) 
+      if(i%2)
 	SN.edgetailor(0.25,Max);
       if(!i) SN.tailor(0.,tb*=0.1f,Max);
-      else SN.tailor(0.,-1,Max); // always add new terms 
+      else SN.tailor(0.,-1,Max); // always add new terms
       if(i<Nta-3)  SN.JR0();
       else if(i<Nta) {
 	if(i==Nta-3) SN.AddTerm(1,0);
@@ -1870,21 +1873,21 @@ int PTFit(	            // return:	error flag (see below)
       n2=fmax(Nth, 6*(SN.NumberofN2()/4+1));
       tlH = dH*tl9/d(0);
       F=SbyLevMar(J,Phi,4+sf,n1,n2,Ni2,tlH,tlC,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-      if(F<0) { 
+      if(F<0) {
 	if(err) {cerr<<" dJ="<<d(0)<<" --> again tailor set of SN, max. "
 		     <<Ni2<<" iterations.\n";
 	  cerr<<" SbyLevMar() returned "<<F<<'\n';}
 	if(F== -3) return -4;
-	return -1; 
+	return -1;
       }
     }
     if((d[0]=dH*fac)<tol || i == (2*Nta-2)-1) {
       if(type==1) { // if no Angle Fit
 	F = Omega(Phi,J,SN,PT,TM,Pi,0.,64.*Pi,Om,dO,dOp);
 	if(F && F!=-1) F = Omega(Phi,J,SN,PT,TM,Pih,0.,32.*Pi,Om,dO,dOp);
-	if(F || Om(0)<Om(2) || (Om(1)<Om(2) && J(1)) ) {                       
+	if(F || Om(0)<Om(2) || (Om(1)<Om(2) && J(1)) ) {
 	  Om = Phi->KapNuOm(Phi->RfromLc(WDabs(J(2))));
-	  dO = Om(1);  
+	  dO = Om(1);
 	} else {
 	  if(!J(1)) Om[1] = (Phi->KapNuOm(Phi->RfromLc(WDabs(J(2)))))(1);
 	  rs   = NearResonant(Om);
@@ -1923,7 +1926,7 @@ int PTFit(	            // return:	error flag (see below)
 	d[0]= dH*fac;
 	if(d(0) < tol) done=true;
 	if(err) cerr<<" dJ = "<<d(0)<<'\n';
-      } 
+      }
     }
   }
 //---------- END LOOP ----------------------------------------------------------

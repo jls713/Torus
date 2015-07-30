@@ -29,13 +29,13 @@ WDMath_h	   = $(INCL)WDMath.h
 Random_h	   = $(INCL)Random.h
 Compress_h	   = $(INCL)Compress.h
 FreeMemory_h	   = $(INCL)FreeMemory.h
-Vector_h	   = $(INCL)Vector.h 
+Vector_h	   = $(INCL)Vector.h
 Matrix_h	   = $(INCL)Matrix.h $(Vector_h)
 Numerics_templates = $(INCL)Numerics.templates $(Matrix_h)
 Numerics_h	   = $(INCL)Numerics.h $(Matrix_h) $(Pi_h) $(Numerics_templates)
 Pspline_h	   = $(INCL)Pspline.h $(FreeMemory_h) $(Numerics_h)
-PJMNum_h	   = $(SRCUTILS)PJMNum.h 
-PJMebf_h	   = $(SRCUTILS)PJMebf.h 
+PJMNum_h	   = $(SRCUTILS)PJMNum.h
+PJMebf_h	   = $(SRCUTILS)PJMebf.h
 CHB_h		   = $(SRCUTILS)CHB.h
 
 AUXIL_H		   = $(Pi_h) $(Random_h) $(Compress_h)   \
@@ -50,15 +50,15 @@ AUXIL_H		   = $(Pi_h) $(Random_h) $(Compress_h)   \
 Err_h 		= $(SRCUTILS)Err.h
 Units_h 	= $(SRCUTILS)Units.h
 Types_h 	= $(SRCUTILS)Types.h
-Constants_h	= $(SRCUTILS)Constants.h $(Units_h)		
+Constants_h	= $(SRCUTILS)Constants.h $(Units_h)
 PJMCoords_h	= $(SRCUTILS)PJMCoords.h $(Constants_h)
 Potential_h 	= $(INC)Potential.h $(Types_h)
 Maps_h		= $(INC)Maps.h $(Pi_h) $(Err_h) $(Types_h)
-GeneratingFunctions_h = $(INC)GeneratingFunctions.h $(Maps_h) 
+GeneratingFunctions_h = $(INC)GeneratingFunctions.h $(Maps_h)
 Toy_Isochrone_h	= $(INC)Toy_Isochrone.h $(Maps_h)
 Point_ClosedOrbitCheby_h	= $(INC)Point_ClosedOrbitCheby.h $(Maps_h) $(CHB_h)
 Point_None_h		= $(INC)Point_None.h $(Maps_h)
-PointTrans_h	= $(Point_ClosedOrbitCheby_h) $(Point_None_h) 
+PointTrans_h	= $(Point_ClosedOrbitCheby_h) $(Point_None_h)
 Orb_h		= $(INC)Orb.h $(Maps_h) $(Potential_h) $(Numerics_h)
 Fit_h		= $(INC)Fit.h $(Maps_h) $(Potential_h)
 Torus_h		= $(INC)Torus.h	$(Maps_h) $(Vector_h) $(Matrix_h) \
@@ -99,7 +99,7 @@ $(OBJ)Random.o:		$(SRCUTILS)Random.cc $(Random_h) $(Numerics_h)
 
 $(OBJ)Numerics.o:	$(SRCUTILS)Numerics.cc $(Numerics_h) $(FreeMemory_h)
 			$(CPP) $(CFLAGS_WD) $< ; $(ARLIB)
-$(OBJ)WDMath.o:		$(SRCUTILS)WDMath.cc $(WDMath_h) 
+$(OBJ)WDMath.o:		$(SRCUTILS)WDMath.cc $(WDMath_h)
 			$(CPP) $(CFLAGS_WD) $< ; $(ARLIB)
 $(OBJ)Compress.o:	$(SRCUTILS)Compress.cc $(Compress_h) $(FreeMemory_h) \
 				$(Numerics_h)
@@ -143,7 +143,7 @@ $(OBJ)Orb.o:	 $(SRC)Orb.cc $(Orb_h)
 		 $(CPP) $(CFLAGS) $(SRC)Orb.cc; $(ARTOR)
 $(OBJ)Point_None.o:	 $(SRC)Point_None.cc $(PointTrans_h) $(Compress_h) $(Pi_h) $(WDMath_h)
 		 $(CPP) $(CFLAGS) $(SRC)Point_None.cc; $(ARTOR)
-$(OBJ)Point_ClosedOrbitCheby.o: $(SRC)Point_ClosedOrbitCheby.cc $(Point_ClosedOrbitCheby_h) $(Compress_h) $(Pi_h) $(WDMath_h) 
+$(OBJ)Point_ClosedOrbitCheby.o: $(SRC)Point_ClosedOrbitCheby.cc $(Point_ClosedOrbitCheby_h) $(Compress_h) $(Pi_h) $(WDMath_h)
 		 $(CPP) $(CFLAGS) $(SRC)Point_ClosedOrbitCheby.cc; $(ARTOR)
 $(OBJ)Torus.o:	 $(SRC)Torus.cc $(Torus_h) $(PointTrans_h) $(Toy_Isochrone_h) \
 		 $(Compress_h) $(Numerics_h) $(GeneratingFunction_h)
@@ -190,6 +190,8 @@ GiveListProps:	$(EXE)GiveListProps.cc MAIN_LIBS
 		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
 AUTOTORUS:	$(EXE)AUTOTORUS.cc MAIN_LIBS
 		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
+Interp:	$(EXE)Interp.cc MAIN_LIBS
+		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
 AUTOTORI:	$(EXE)AUTOTORI.cc MAIN_LIBS
 		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
 READLIST:	$(EXE)READLIST.cc MAIN_LIBS
@@ -221,5 +223,5 @@ mains: Library TorFit GalPot Other testfalPot GiveListProps AUTOTORUS \
        AUTOTORI READLIST Choose_any_df Create_DF_tori \
        Sample_list_limits Orbit_basic Coord_converter Add_Uncert \
        SmoothStreamMaker GridAndGrid CompareTorusIntegrated \
-       CompareTorusIntegrated_SOS testMultiPot 
+       CompareTorusIntegrated_SOS testMultiPot
 

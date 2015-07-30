@@ -31,7 +31,7 @@ const int errGen_ = 4;
 ////////////////////////////////////////////////////////////////////////////////
 // class GenPar
 
-int GenPar::NumberofTermsUsed() const 
+int GenPar::NumberofTermsUsed() const
 {
   int output=0;
   for(int i=0;i!=ntot;i++) if(S[i]) output++;
@@ -66,9 +66,9 @@ void GenPar::sortSn() // sort in order of n (order by n2, then n1 if needed)
       short *N2new = new short[ntot];
       double *Snew  = new double[ntot];
       for(i=0; i<ntot; i++) {
-	N1new[i] = N1[I[i]];   
-	N2new[i] = N2[I[i]];   
-	Snew[i]  = S[I[i]];   
+	N1new[i] = N1[I[i]];
+	N2new[i] = N2[I[i]];
+	Snew[i]  = S[I[i]];
       }
       delete[] I;
       delete[] N1;
@@ -157,15 +157,15 @@ GenPar::~GenPar()
 //   N1   = new short[ntot];
 //   N2   = new short[ntot];
 //   S    = new double[ntot];
-  
+
 //    for(int i=0;i!=ntot;i++) {
 //     N1[i] = (i<8)? 1+i%4 : (i<20)? 1+(i-1)%5 : (i<27)? i%7 : (i-2)%5;
-//     N2[i] = (i<4)? 6 : (i<8)? 4 : (i<14)? 2 : (i<20)? 0 : (i<27)? -2 : 
-//             (i<32)? -4: -6; 
+//     N2[i] = (i<4)? 6 : (i<8)? 4 : (i<14)? 2 : (i<20)? 0 : (i<27)? -2 :
+//             (i<32)? -4: -6;
 //    }
 
-//   for(register short i=0; i<ntot; i++) S[i] = 0.; 
-//   sortSn();   // Shouldn't be needed, but 
+//   for(register short i=0; i<ntot; i++) S[i] = 0.;
+//   sortSn();   // Shouldn't be needed, but
 //   findNN();   // better safe than sorry.
 // }
 
@@ -177,15 +177,20 @@ void GenPar::MakeGeneric()
   N1   = new short[ntot];
   N2   = new short[ntot];
   S    = new double[ntot];
-  
-  N2[0] = -4; N1[0] = 0; 
-  N2[1] = -2; N1[1] = 0;  N2[2] = -2; N1[2] = 1;  N2[3] = -2; N1[3] = 2;
-  N2[4] = 0;  N1[4] = 1;  N2[5] = 0;  N1[5] = 2;  N2[6] = 0;  N1[6] = 3; 
-  N2[7] = 2;  N1[7] = 1;  N2[8] = 2;  N1[8] = 2; 
+
+  N2[0] = -4; N1[0] = 0;
+  N2[1] = -2; N1[1] = 0;
+  N2[2] = -2; N1[2] = 1;
+  N2[3] = -2; N1[3] = 2;
+  N2[4] = 0;  N1[4] = 1;
+  N2[5] = 0;  N1[5] = 2;
+  N2[6] = 0;  N1[6] = 3;
+  N2[7] = 2;  N1[7] = 1;
+  N2[8] = 2;  N1[8] = 2;
   N2[9] = 4;  N1[9] = 1;
 
   for(int i=0; i<ntot; i++) S[i] = 0.;
-  sortSn();   // Shouldn't be needed, but 
+  sortSn();   // Shouldn't be needed, but
   findNN();   // better safe than sorry.
   SanityCheck();
 }
@@ -251,7 +256,7 @@ void GenPar::read(istream& from)
         N1   = new short[ntot];
         N2   = new short[ntot];
         S    = new double[ntot];
-    } 
+    }
     register short i;
     for(i=0; i<ntot; i++) {
 	from >> N1[i] >> N2[i] >> S[i];
@@ -278,7 +283,7 @@ void GenPar::read(int *N1in, int *N2in, double *Snin, short newtot)
         N1   = new short[ntot];
         N2   = new short[ntot];
         S    = new double[ntot];
-    } 
+    }
     register short i;
     for(i=0; i<ntot; i++) {
       N1[i] = N1in[i];
@@ -397,12 +402,12 @@ void GenPar::edgetailor(const double a, const int Max)
     for(n2=n2min; n2<=n2max; n2++)
       map[n1][n2] = 0;
   }
-  for(i=0; i<ntot; i++) 
+  for(i=0; i<ntot; i++)
     map[N1[i]][N2[i]] = 1;
-  
-  
+
+
   for(i=0; i<ntot; i++) {
-    if(map[N1[i]+1][N2[i]] && (map[N1[i]][N2[i]-2]) 
+    if(map[N1[i]+1][N2[i]] && (map[N1[i]][N2[i]-2])
        && (map[N1[i]][N2[i]+2] || (N1[i]==0 && N2[i]==-2)))
       edge[i] = false;
     else {
@@ -410,11 +415,11 @@ void GenPar::edgetailor(const double a, const int Max)
       nedge++;
     }
   }
-  
-  float *vals = new float[nedge]; 
-  int *wheres = new int[nedge], 
+
+  float *vals = new float[nedge];
+  int *wheres = new int[nedge],
     *I = new int[nedge];
-  for(i=0, n=0; i!=ntot;i++) 
+  for(i=0, n=0; i!=ntot;i++)
     if(edge[i]) {
       wheres[n] = i;
       vals[n++] = fabs(S[i]);
@@ -464,9 +469,9 @@ void GenPar::edgetailor(const double a, const int Max)
 	N2new[n] = n2;
 	Snew[n]  = 0.;
 	n++;
-	if(n==newtot) done = true; 
+	if(n==newtot) done = true;
       }
-  
+
   for(n1=0; n1<nn1+2; n1++)
     delete[] (map[n1]+n2min);
   delete[] map;
@@ -644,7 +649,7 @@ void GenPar::addn1eq0(const int nadd)
     N1new[i+nadd] = N1[i];
     N2new[i+nadd] = N2[i];
     Snew [i+nadd] = S[i];
-  } 
+  }
   if(ntot>0) {
     delete[] N1;
     delete[] N2;
@@ -670,7 +675,7 @@ int GenPar::AddTerm      (const int nadd1, const int nadd2) {
     N1new[i] = N1[i];
     N2new[i] = N2[i];
     Snew [i] = S[i];
-  } 
+  }
   N1new[ntot] = nadd1;
   N2new[ntot] = nadd2;
   Snew [ntot] = 0.;
@@ -705,11 +710,11 @@ void GenPar::Build_JR0    (const int type) {
       N1new[i] = N1[i];
       N2new[i] = N2[i];
       Snew [i] = S[i];
-    } 
+    }
     newn2 -= 2;
     N1new[ntot] = 0;
     N2new[ntot] = newn2;
-    Snew [ntot] = 0.; 
+    Snew [ntot] = 0.;
   }
   if(type==2) {
     register int  newn1=0;
@@ -723,11 +728,11 @@ void GenPar::Build_JR0    (const int type) {
       N1new[i] = N1[i];
       N2new[i] = N2[i];
       Snew [i] = S[i];
-    } 
+    }
     newn1++;
     N1new[ntot] = newn1;
     N2new[ntot] = 0;
-    Snew [ntot] = 0.; 
+    Snew [ntot] = 0.;
   }
 
   if(type==3) {
@@ -754,7 +759,7 @@ void GenPar::Build_JR0    (const int type) {
       if(gotn2_0 && N2new[i] >=0) N2new[i] += 2;
       Snew [i] = 0.;
     }
- 
+
   }
   if(ntot>0) {
     delete[] N1;
@@ -769,7 +774,7 @@ void GenPar::Build_JR0    (const int type) {
   SanityCheck();
   findNN();
 
-} 
+}
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -795,7 +800,7 @@ GenPar& GenPar::operator=(const GenPar& G)
 	    N2[i] = G.N2[i];
 	    S[i]  = G.S[i];
 	}
-    } 
+    }
     //SanityCheck();
     findNN();
     return *this;
@@ -803,7 +808,7 @@ GenPar& GenPar::operator=(const GenPar& G)
 ////////////////////////////////////////////////////////////////////////////////
 GenPar& GenPar::operator+=(const GenPar& G)
 {
-    if(ntot<=0)   return *this=G; 
+    if(ntot<=0)   return *this=G;
     if(G.ntot<=0) return *this;
     if(same_terms_as(G)) {
 	for(register short i=0; i<ntot; i++) S[i] += G.S[i];
@@ -812,7 +817,7 @@ GenPar& GenPar::operator+=(const GenPar& G)
     short* n1t = new short[ntot+G.ntot];
     short* n2t = new short[ntot+G.ntot];
     double* st  = new double[ntot+G.ntot];
-    register short i=0,j=0,n=0,mi,mj; 
+    register short i=0,j=0,n=0,mi,mj;
     while(i<ntot || j<G.ntot) {
 	if(j==G.ntot) {
 	    n1t[n] = N1[i];
@@ -884,7 +889,7 @@ GenPar& GenPar::operator-=(const GenPar& G)
     short* n1t = new short[ntot+G.ntot];
     short* n2t = new short[ntot+G.ntot];
     double* st  = new double[ntot+G.ntot];
-    register short i=0,j=0,n=0,mi,mj; 
+    register short i=0,j=0,n=0,mi,mj;
     while(i<ntot || j<G.ntot) {
 	if(j==G.ntot) {
 	    n1t[n] = N1[i];
@@ -1044,7 +1049,7 @@ void GenPar::get(istream& from)
         N1   = new short[ntot];
         N2   = new short[ntot];
         S    = new double[ntot];
-    } 
+    }
     register short i;
     for(i=0; i<ntot; i++) from >> N1[i];
     for(i=0; i<ntot; i++) {
@@ -1120,8 +1125,8 @@ PSPD GenFnc::ForwardWithDerivs(const PSPD& Jt, double djdt[2][2]) const
     djdt[1][1]=0;
     for(i=0; i<Sn.NumberofTerms(); i++) if(Sn(i)!=0.) {
 	thn    = jt(2)*Sn.n1(i) + jt(3)*Sn.n2(i);
-	sncos  = Sn(i) * cos(thn); 
-	snsin  = Sn(i) * sin(thn); 
+	sncos  = Sn(i) * cos(thn);
+	snsin  = Sn(i) * sin(thn);
 	sncos += sncos;   // sncos = 2 * Sn * cos(n1*th1 + n2*th2)
 	snsin += snsin;   // snsin = 2 * Sn * sin(n1*th1 + n2*th2)
 	jt[0] += Sn.n1(i) * sncos;
@@ -1159,12 +1164,12 @@ void GenFncFit::SetTrig()
     Pin1 = Pi/double(Nth1);
     Pin2 = Pi/double(Nth2);
     for(i=0; i<Sn.NumberofTerms(); i++) {
-	for(t=0; t<Nth1; t++) { 
+	for(t=0; t<Nth1; t++) {
 	    thn       = Sn.n1(i) * t * Pin1;
 	    cc1[i][t] = cos(thn);
 	    ss1[i][t] = sin(thn);
 	}
-	for(t=0; t<Nth2; t++) { 
+	for(t=0; t<Nth2; t++) {
 	    thn       = Sn.n2(i) * t * Pin2;
 	    cc2[i][t] = cos(thn);
 	    ss2[i][t] = sin(thn);
@@ -1187,12 +1192,12 @@ void GenFncFit::AllocAndSetTrig()
 	cc2[i] = new double[Nth2];
 	ss1[i] = new double[Nth1];
 	ss2[i] = new double[Nth2];
-	for(t=0; t<Nth1; t++) { 
+	for(t=0; t<Nth1; t++) {
 	    thn       = Sn.n1(i) * t * Pin1;
 	    cc1[i][t] = cos(thn);
 	    ss1[i][t] = sin(thn);
 	}
-	for(t=0; t<Nth2; t++) { 
+	for(t=0; t<Nth2; t++) {
 	    thn       = Sn.n2(i) * t * Pin2;
 	    cc2[i][t] = cos(thn);
 	    ss2[i][t] = sin(thn);
@@ -1231,7 +1236,7 @@ const
 	TorusError("GenFncFit: (t1,t2) out of range",errGen_);
     register PSPD   jt=PSPD(J1, J2, t1*Pin1, t2*Pin2);
     register double sncos;
-    for(register short i=0; i<Sn.NumberofTerms(); i++) if(Sn(i)!=0.) { 
+    for(register short i=0; i<Sn.NumberofTerms(); i++) if(Sn(i)!=0.) {
                         // remember that Sn is the GenPar in the member GenFnc S
 	sncos  = Sn(i) * (cc1[i][t1]*cc2[i][t2] - ss1[i][t1]*ss2[i][t2]);
 	if(fabs(sncos) <= acc) sncos = 0.;
@@ -1387,7 +1392,7 @@ PSPD AngMap::Forward(const PSPD& Input) const
 		laq = lam-lom;
 		b  /= laq;
 	        lom = lam;
-		if(a==0.) 
+		if(a==0.)
 		    lam =-0.5*slp/b;
                 else {
 		    a /= laq;
@@ -1407,7 +1412,7 @@ PSPD AngMap::Forward(const PSPD& Input) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PSPT AngMap::Backward3D (const PSPT& Jt) const 
+PSPT AngMap::Backward3D (const PSPT& Jt) const
 { // from toy to real
   short  i;
   PSPT   JT = Jt;
@@ -1453,14 +1458,14 @@ PSPT AngMap::Forward3D (const PSPT& JT3) const
   double sinth;
   PSPT Jt3 = JT3;
   PSPD Jt2,JT2 = JT3.Give_PSPD();
-  
+
   Jt2 = Forward(JT2); // find th_R, th_z (above)
   Jt3.Take_PSPD(Jt2);
-  
+
   for(int i=0; i<A.NumberofTerms(); i++) {
     sinth  = sin(A.dS1.n1(i)*Jt3(3) + A.dS1.n2(i)*Jt3(4));
     sinth += sinth;             // 2 * sin(n1*th1+n2*th2)
-    Jt3[5] -= A.dS3(i) * sinth; // no th_phi dependence in sinth, 
+    Jt3[5] -= A.dS3(i) * sinth; // no th_phi dependence in sinth,
                                 // so this step is the easiest
   }
   return Jt3;
