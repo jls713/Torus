@@ -1,5 +1,5 @@
 /***************************************************************************//**
-\file GeneratingFunction.h 
+\file GeneratingFunction.h
 \brief File containing classes that handle generating function and derivatives for conversions between toy and true angle-action variables
 
 *                                                                              *
@@ -51,7 +51,7 @@
  */
 class GenPar {
 private:
-  short   ntot, nn1, nn2, *N1, *N2;  // n for the S_n 
+  short   ntot, nn1, nn2, nn3, *N1, *N2, *N3;  // n for the S_n
   double   *S;                       // S_n
   void    sortSn();                  // Put in correct order
   void    findNN();                  // Find range of n used
@@ -64,7 +64,7 @@ public:
    int     same_terms_as(const GenPar&) const;  // identical n, yes or no?
    void    write        (ostream&) const;       // write to file
    void    read         (istream&);             // read from file
-   void    read         (int*,int*,double*,short);// read from file
+   void    read         (int*,int*,int*,double*,short);// read from file
    void    write_log    (ostream&) const;       // write (human readable)
    void    MakeGeneric  ();                     // Make this a typical GenPar
    void    tailor       (const double, const double, const int);
@@ -77,7 +77,7 @@ public:
    void    Build_JR0    (const int);
    void    addn1eq0     (const int);
    double  maxS	 () const;
-    
+
    GenPar& operator=    (const GenPar&);
    GenPar& operator+=   (const GenPar&);
    GenPar& operator-=   (const GenPar&);
@@ -90,13 +90,13 @@ public:
    GenPar  operator-    (const GenPar&) const;
    GenPar  operator*    (const double&) const;
    GenPar  operator/    (const double&) const;
-   
+
 
    int     operator==   (const GenPar&) const;
    int     operator!=   (const GenPar&) const;
    double   operator()   (const int) const;
    double&  operator[]   (const int);
-   
+
    void    put          (ostream&) const;
    void    get          (istream&);
    void    put_terms    (ostream&) const;
@@ -108,22 +108,26 @@ public:
     int     NumberofTermsUsed() const;
     int     NumberofN1   () const;
     int     NumberofN2   () const;
+    int     NumberofN3   () const;
     int     n1           (const int) const;
     int     n2           (const int) const;
+    int     n3           (const int) const;
 };
 inline double   GenPar::operator()   (const int i) const { return S[i]; }
 inline double&  GenPar::operator[]   (const int i) { return S[i]; }
 inline int     GenPar::n1           (const int i) const { return N1[i]; }
 inline int     GenPar::n2           (const int i) const { return N2[i]; }
+inline int     GenPar::n3           (const int i) const { return N3[i]; }
 inline int     GenPar::NumberofTerms() const { return ntot; }
 inline int     GenPar::NumberofN1() const { return nn1; }
 inline int     GenPar::NumberofN2() const { return nn2; }
+inline int     GenPar::NumberofN3() const { return nn3; }
 
 inline istream& operator>> (istream& from, GenPar& G)
 	{ G.read(from); return from; }
 inline ostream& operator<< (ostream& to, GenPar& G)
 	{ G.write(to); return to; }
-inline GenPar operator* (const double x, const GenPar& GP) 
+inline GenPar operator* (const double x, const GenPar& GP)
 { return GP*x; }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -174,10 +178,10 @@ inline void AngPar::CheckTerms() const
 	{ if(!dS1.same_terms_as(dS2) || !dS1.same_terms_as(dS3))
 	      TorusError(" mismatch between dS1/2/3 in AngPar",-4); }
 inline AngPar::AngPar(const int n): dS1(n), dS2(n), dS3(n) {}
-inline AngPar::AngPar(const AngPar& a): 
+inline AngPar::AngPar(const AngPar& a):
 	      dS1(a.dS1),dS2(a.dS2),dS3(a.dS3)
 { CheckTerms(); }
-inline AngPar::AngPar(const GenPar& s1, const GenPar& s2, const GenPar& s3): 
+inline AngPar::AngPar(const GenPar& s1, const GenPar& s2, const GenPar& s3):
 	      dS1(s1), dS2(s2), dS3(s3)
 	{ CheckTerms(); }
 inline AngPar& AngPar::operator=(const AngPar& a)
@@ -312,9 +316,9 @@ public:
     double   dSdJ2             (const int)   const;
     double   dSdJ3             (const int)   const;
     int     NumberofParameters()            const;
-    PSPD    Forward           (const PSPD&) const; 
+    PSPD    Forward           (const PSPD&) const;
     PSPD    Backward          (const PSPD&) const;
-    PSPD    BackwardWithDerivs(const PSPD&, double[2][2]) const; 
+    PSPD    BackwardWithDerivs(const PSPD&, double[2][2]) const;
     PSPT    Forward3D         (const PSPT&) const;
     PSPT    Backward3D        (const PSPT&) const;
     PSPT    Backward3DWithDerivs(const PSPT&, double[2][2]) const;
