@@ -1069,4 +1069,31 @@ inline double Torus::check(Potential *Phi) {
   return dH;
 }
 
+
+#include <vector>
+
+class TorusInterpCell{
+  // Torus interpolation class
+  // Creates 9 tori: one at the centre (J) of a cuboid with sides deltaJ
+  // and 8 on the corners of the cuboid
+  // Once created the class can be used to find PSPT given J,theta and
+  // the frequencies via linear interpolation
+private:
+  Actions J0,J,deltaJ,deltaJh;
+  Potential *Phi;
+  std::vector<Torus*> Tori;
+  Torus* TorusToUse;
+  double dJ,deltaprod;
+  double flag;
+  const int N;
+  GenPar GP,GP1,GP2,GP3;
+  AngPar AP;
+public:
+  TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N);
+  PSPT Map3D(Actions J,Angles A);
+  Frequencies omegas(Actions J);
+  void test(Actions J,Angles A);
+};
+
+
 #endif

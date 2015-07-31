@@ -1300,6 +1300,81 @@ void Torus::FindLimits() { // Approximate.
   Rmax = (MapfromToy(Ang))(0);
 }
 
+TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N):J0(J0),Phi(Phi),deltaJ(deltaJ),dJ(dJ),N(N){
+  deltaJh=.5*deltaJ;
+  deltaprod=deltaJ[0]*deltaJ[1]*deltaJ[2];deltaprod=1./deltaprod;
+  TorusToUse=new Torus;
+  flag = TorusToUse->AutoFit(J0,Phi,dJ,N,300,15,5,24,200,24,0);
+  IsoPar IM = TorusToUse->TP();
+  std::vector<int> plus_minus(3,0);
+  for(int i=0;i<8;++i){
+    Tori.push_back(new Torus);
+    plus_minus[0]=(i%2)*-2+1;
+    plus_minus[1]=((i/2)%2)*-2+1;
+    plus_minus[2]=((i/4)%2)*-2+1;
+    for(int k=0;k<3;++k)J[k]=J0[k]+plus_minus[k]*deltaJh[k];
+    Tori[i]->AutoFit(J,Phi,dJ,N,300,15,5,24,200,24,0,IM);
+  }
+  TorusToUse->SetTP(IM);
+}
+PSPT TorusInterpCell::Map3D(Actions J,Angles A){
+  Actions ddJ = J-J0+deltaJh,mddJ = deltaJ-ddJ;
+  TorusToUse->SetActions(J);
+  GP =  ddJ[2]*(ddJ[1]*(ddJ[0]*Tori[0]->SN()+mddJ[0]*Tori[1]->SN())
+              +mddJ[1]*(ddJ[0]*Tori[2]->SN()+mddJ[0]*Tori[3]->SN()))
+      +mddJ[2]*(ddJ[1]*(ddJ[0]*Tori[4]->SN()+mddJ[0]*Tori[5]->SN())
+              +mddJ[1]*(ddJ[0]*Tori[6]->SN()+mddJ[0]*Tori[7]->SN()));
+  GP *= deltaprod;
+  GP1 =  ddJ[2]*(ddJ[1]*(ddJ[0]*Tori[0]->AP().dSdJ1()
+                       +mddJ[0]*Tori[1]->AP().dSdJ1())
+              +mddJ[1]*(ddJ[0]*Tori[2]->AP().dSdJ1()
+                       +mddJ[0]*Tori[3]->AP().dSdJ1()))
+      +mddJ[2]*(ddJ[1]*(ddJ[0]*Tori[4]->AP().dSdJ1()
+                       +mddJ[0]*Tori[5]->AP().dSdJ1())
+              +mddJ[1]*(ddJ[0]*Tori[6]->AP().dSdJ1()
+                       +mddJ[0]*Tori[7]->AP().dSdJ1()));
+  GP1 *= deltaprod;
+  GP2 =  ddJ[2]*(ddJ[1]*(ddJ[0]*Tori[0]->AP().dSdJ2()
+                       +mddJ[0]*Tori[1]->AP().dSdJ2())
+              +mddJ[1]*(ddJ[0]*Tori[2]->AP().dSdJ2()
+                       +mddJ[0]*Tori[3]->AP().dSdJ2()))
+      +mddJ[2]*(ddJ[1]*(ddJ[0]*Tori[4]->AP().dSdJ2()
+                       +mddJ[0]*Tori[5]->AP().dSdJ2())
+              +mddJ[1]*(ddJ[0]*Tori[6]->AP().dSdJ2()
+                       +mddJ[0]*Tori[7]->AP().dSdJ2()));
+  GP2 *= deltaprod;
+  GP3 =  ddJ[2]*(ddJ[1]*(ddJ[0]*Tori[0]->AP().dSdJ3()
+                       +mddJ[0]*Tori[1]->AP().dSdJ3())
+              +mddJ[1]*(ddJ[0]*Tori[2]->AP().dSdJ3()
+                       +mddJ[0]*Tori[3]->AP().dSdJ3()))
+      +mddJ[2]*(ddJ[1]*(ddJ[0]*Tori[4]->AP().dSdJ3()
+                       +mddJ[0]*Tori[5]->AP().dSdJ3())
+              +mddJ[1]*(ddJ[0]*Tori[6]->AP().dSdJ3()
+                       +mddJ[0]*Tori[7]->AP().dSdJ3()));
+  GP3 *= deltaprod;
+  TorusToUse->SetSN(GP);
+  TorusToUse->SetAP(AngPar(GP1,GP2,GP3));
+  return TorusToUse->Map3D(A);
+}
+Frequencies TorusInterpCell::omegas(Actions J){
+  Actions ddJ = J-J0+deltaJh,mddJ = deltaJ-ddJ;
+  return (ddJ[2]*(ddJ[1]*(ddJ[0]*Tori[0]->omegas()
+                            +mddJ[0]*Tori[1]->omegas())
+                            +mddJ[1]*(ddJ[0]*Tori[2]->omegas()
+                            +mddJ[0]*Tori[3]->omegas()))
+                            +mddJ[2]*(ddJ[1]*(ddJ[0]*Tori[4]->omegas()
+                            +mddJ[0]*Tori[5]->omegas())
+                            +mddJ[1]*(ddJ[0]*Tori[6]->omegas()
+                            +mddJ[0]*Tori[7]->omegas())))*deltaprod;
+}
+void TorusInterpCell::test(Actions J,Angles A){
+  std::cout<<Map3D(J,A)<<" "<<omegas(J)<<std::endl;
+  Torus *T=new Torus;
+  T->AutoFit(J,Phi,dJ,N,300,15,5,24,200,24,0);
+  std::cout<<T->Map3D(A)<<" "<<T->omegas()<<std::endl;
+  return;
+}
+
 
 
 
