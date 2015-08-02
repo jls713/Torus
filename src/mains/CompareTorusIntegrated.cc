@@ -33,21 +33,21 @@ TorRz 1		 data $1.tororb
       		 read {_RT 3 _zT 4}
 		 ctype default
 		 lweight 4
-		 limits _RT _zT box 
+		 limits _RT _zT box
 		 lweight 5 connect _RT _zT
 		 data $1.intorb
       		 read {_RI 3 _zI 4}
 		 ctype red ltype 2
 		 lweight 2 connect _RI _zI
 		 ltype 0
-		 ctype default    
+		 ctype default
 
  */
 
 
 int main(int argc,char *argv[])
 {
- 
+
   int NT=1000, Ndyn=15,Nlarge=500000,flag;
   time_t second=time(NULL);
   long cp=second;
@@ -62,7 +62,7 @@ int main(int argc,char *argv[])
   Random3 r3(cp);
 
   T = new Torus;
- 
+
 //---------------------------------------------------------------------------
   if( argc !=6 && argc !=7 ){
     cerr << "Outputs orbit found from torus and from orbit integration\n"
@@ -81,7 +81,7 @@ int main(int argc,char *argv[])
   double dJ = (argc==7)? atof(argv[6]) : 0.003;
   bool err = false;
 // Use the Torus member functions AutoTorus to take a first (weak) guess -------
-  
+
   flag = T->AutoFit(J,Phi,dJ);
   // std::cout << J << ", flag = " << flag<< "\n" << std::flush;
 
@@ -91,7 +91,7 @@ int main(int argc,char *argv[])
 // The Torus part -------------------------------------------------------------
     Angles A0;
     PSPT Q;
-    Frequencies om=T->omega(); double omratz=1.,omratp=1.,t=0; 
+    Frequencies om=T->omegas(); double omratz=1.,omratp=1.,t=0;
     if(om(0) && om(1)) omratz = om(1)/om(0);
     if(om(0) && om(2)) omratp = om(2)/om(0);
     Angles A =0.;
@@ -100,7 +100,7 @@ int main(int argc,char *argv[])
 
     A0 = A;
     double dOr=TPi*double(Ndyn)/double(NT),dOl=omratz*dOr,dOp=omratp*dOr;
-  
+
     JT[0] = T->action(0); JT[1] = T->action(1);
 
     double Ezmin = 1e99, Ezmax = -1e99;
@@ -114,16 +114,16 @@ int main(int argc,char *argv[])
 
       ti[i] = t;  Ri[i] =  Q(0); zi[i] =  Q(1); phii[i++] =  Q(2);
       // double Ez = 0.5*Q(4)*Q(4) + (*Phi)(Q(0),Q(1)) - (*Phi)(Q(0),0.);
-      // if(Ez<Ezmin) Ezmin = Ez; 
-      // if(Ez>Ezmax) Ezmax = Ez; 
+      // if(Ez<Ezmin) Ezmin = Ez;
+      // if(Ez>Ezmax) Ezmax = Ez;
       // cerr << Q(0) << ' ' << Q(1) << ' ' << Ez << '\n';
     }
     float tT[NT],RT[NT],zT[NT],phiT[NT];
     for(int i=0; i!=NT; i++) {
       tT[i] = ti[i]; RT[i] = Ri[i]; zT[i] = zi[i]; phiT[i] = phii[i];
     }
-    //cerr << "Ezmin/max: " << Ezmin << ' ' << Ezmax << '\n'; 
- 
+    //cerr << "Ezmin/max: " << Ezmin << ' ' << Ezmax << '\n';
+
 // The orbit integration part --------------------------------------------------
     int NO = 0;
     t=0.;
@@ -141,13 +141,13 @@ int main(int argc,char *argv[])
 	Q = X.QP3D();
 	ti[NO] = t;  Ri[NO] =  Q(0); zi[NO] =  Q(1); phii[NO++] =  Q(2);
 
-      } 
+      }
     }
 
     float tO[NO], RO[NO],zO[NO],phiO[NO];
     for(int i=0; i!=NO; i++) {
       tO[i] = ti[i]; RO[i] = Ri[i]; zO[i] = zi[i]; phiO[i] = phii[i];
-    } 
+    }
 
     // correct so they end at the same time
     // tO[NO-1] < tT[NT-1] always
@@ -172,11 +172,11 @@ int main(int argc,char *argv[])
 	if(phiT[i]< phiT[i-1]) {
 	  // interpolate
 	  double diff = 1. - (phiT[i]/(phiT[i]-(phiT[i-1]-TPi)));
-	  to << i-1+diff << ' ' <<  tT[i-1]+diff*(tT[i]-tT[i-1]) << ' ' 
-	     << RT[i-1]+diff*(RT[i]-RT[i-1]) << ' ' 
+	  to << i-1+diff << ' ' <<  tT[i-1]+diff*(tT[i]-tT[i-1]) << ' '
+	     << RT[i-1]+diff*(RT[i]-RT[i-1]) << ' '
 	     << zT[i-1]+diff*(zT[i]-zT[i-1]) << " 6.283\n"
-	     << i-1+diff << ' ' <<  tT[i-1]+diff*(tT[i]-tT[i-1]) << ' ' 
-	     << RT[i-1]+diff*(RT[i]-RT[i-1]) << ' ' 
+	     << i-1+diff << ' ' <<  tT[i-1]+diff*(tT[i]-tT[i-1]) << ' '
+	     << RT[i-1]+diff*(RT[i]-RT[i-1]) << ' '
 	     << zT[i-1]+diff*(zT[i]-zT[i-1]) << " 0\n";
 	}
       to << i  << ' ' <<  tT[i] << ' ' <<  RT[i]  << ' ' << zT[i]  << ' ' << phiT[i]<<'\n';
@@ -190,16 +190,16 @@ int main(int argc,char *argv[])
 	if(phiO[i]< phiO[i-1]) {
 	  // interpolate
 	  double diff = 1. - (phiO[i]/(phiO[i]-(phiO[i-1]-TPi)));
-	  to << tO[i-1]/(dOr/om(0))+diff << ' ' 
-	     <<  tO[i-1]+diff*(tO[i]-tO[i-1]) << ' ' 
-	     << RO[i-1]+diff*(RO[i]-RO[i-1]) << ' ' 
+	  to << tO[i-1]/(dOr/om(0))+diff << ' '
+	     <<  tO[i-1]+diff*(tO[i]-tO[i-1]) << ' '
+	     << RO[i-1]+diff*(RO[i]-RO[i-1]) << ' '
 	     << zO[i-1]+diff*(zO[i]-zO[i-1]) << " 6.283\n"
-	     << tO[i-1]/(dOr/om(0))+diff << ' ' 
-	     <<  tO[i-1]+diff*(tO[i]-tO[i-1]) << ' ' 
-	     << RO[i-1]+diff*(RO[i]-RO[i-1]) << ' ' 
+	     << tO[i-1]/(dOr/om(0))+diff << ' '
+	     <<  tO[i-1]+diff*(tO[i]-tO[i-1]) << ' '
+	     << RO[i-1]+diff*(RO[i]-RO[i-1]) << ' '
 	     << zO[i-1]+diff*(zO[i]-zO[i-1]) << " 0\n";
 	    }
-      to << tO[i]/(dOr/om(0)) << ' ' <<  tO[i] << ' ' 
+      to << tO[i]/(dOr/om(0)) << ' ' <<  tO[i] << ' '
 	 <<  RO[i]  << ' ' << zO[i]  << ' ' << phiO[i]<<'\n';
     }
     to.close();

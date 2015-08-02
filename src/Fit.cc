@@ -1390,7 +1390,7 @@ int AllFit(	            // return:	error flag (see below)
   if(err) cerr<<" 0. Fit of ToyPar & CanPar\n"; // NOTE 0 below: temporary
   if(!fixtoy){
     F = SbyLevMar(J,Phi,5,n1,n2,Ni0,BIG,0.,SN,PT,TM,l=l0,Hav,dH,ngA,eH,err);
-      // Function (above) which does the Levenberg-Marquad iteration
+      // Function (above) which does the Levenberg-Marquadt iteration
       // return value is #iterations or negative number for error
       if(F<0) {
         if(err) cerr<<" SbyLevMar() returned "<<F<<'\n';

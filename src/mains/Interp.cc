@@ -23,19 +23,24 @@
 
 #include "PJM_cline.h"
 
+#include "Random.h"
 using std::cerr;
 
 int main(int argc,char *argv[])
 {
-  Potential *Phi = new LogPotential(220.*Units::kms,0.8,0.,0.);
-  Actions  J,deltaJ;
+  Random3 R3(6);
+  Potential *Phi = new LogPotential(220.*Units::kms,0.9,0.,0.);
+  Actions  J,J2,deltaJ;
   J[0] = 0.4; J[1] = 0.4; J[2] = 1.8;
-  deltaJ[0] = 0.1; deltaJ[1] = 0.1; deltaJ[2] = 0.1;
-  double   dJ=0.0003;int N=400;
+  deltaJ[0] = 0.04; deltaJ[1] = 0.04; deltaJ[2] = 0.04;
+  double   dJ=0.00003;int N=300;
   TorusInterpCell TIC(J,Phi,deltaJ,dJ,N);
-  Angles A;A[0]=0.4;A[1]=1.4;A[2]=5.2;
-  J=J+deltaJ*.2;
-  TIC.test(J,A);
+  Angles A;
+  for(int k=0;k<100;++k){
+      for(int i=0;i<3;++i) A[i]=2.*Pi*R3();
+      for(int i=0;i<3;++i) J2[i]=J[i]-deltaJ[i]/2.+R3()*deltaJ[i];
+      TIC.test(J2,A);
+  }
 }
 
 
