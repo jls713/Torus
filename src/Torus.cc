@@ -1300,11 +1300,31 @@ void Torus::FindLimits() { // Approximate.
   Rmax = (MapfromToy(Ang))(0);
 }
 
-TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N):J0(J0),Phi(Phi),deltaJ(deltaJ),dJ(dJ),N(N){
+std::vector<std::vector<double> > threebythreeinverse(std::vector<std::vector<double> > A){
+  std::vector<std::vector<double> > result = A;
+  double determinant =    +A[0][0]*(A[1][1]*A[2][2]-A[2][1]*A[1][2])
+                          -A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])
+                          +A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+  double invdet = 1/determinant;
+  result[0][0] =  (A[1][1]*A[2][2]-A[2][1]*A[1][2])*invdet;
+  result[0][1] = -(A[0][1]*A[2][2]-A[0][2]*A[2][1])*invdet;
+  result[0][2] =  (A[0][1]*A[1][2]-A[0][2]*A[1][1])*invdet;
+  result[1][0] = -(A[1][0]*A[2][2]-A[1][2]*A[2][0])*invdet;
+  result[1][1] =  (A[0][0]*A[2][2]-A[0][2]*A[2][0])*invdet;
+  result[1][2] = -(A[0][0]*A[1][2]-A[1][0]*A[0][2])*invdet;
+  result[2][0] =  (A[1][0]*A[2][1]-A[2][0]*A[1][1])*invdet;
+  result[2][1] = -(A[0][0]*A[2][1]-A[2][0]*A[0][1])*invdet;
+  result[2][2] =  (A[0][0]*A[1][1]-A[1][0]*A[0][1])*invdet;
+  return result;
+}
+
+
+TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N):J0(J0),Phi(Phi),deltaJ(deltaJ),dJ(dJ),N(N),D(std::vector<std::vector<double> >(3,std::vector<double>(3,0.))){
   deltaJh=.5*deltaJ;
   deltaprod=deltaJ[0]*deltaJ[1]*deltaJ[2];deltaprod=1./deltaprod;
   TorusToUse=new Torus;
   flag = TorusToUse->AutoFit(J0,Phi,dJ,N,300,15,5,24,200,24,0);
+  O0=TorusToUse->omegas();
   IsoPar IM = TorusToUse->TP();
   std::vector<int> plus_minus(3,0);
   int minN=N;
@@ -1315,8 +1335,17 @@ TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, dou
     plus_minus[2]=((i/4)%2)*-2+1;
     for(int k=0;k<3;++k)J[k]=J0[k]+plus_minus[k]*deltaJh[k];
     Tori[i]->AutoFit(J,Phi,dJ,N,300,15,5,24,200,24,0,IM);
+    for(int j=0;j<3;++j)
+      for(int k=0;k<3;++k)
+        D[j][k]+=plus_minus[k]*Tori[i]->omegas()[j];
   }
+  for(int j=0;j<3;++j)
+      for(int k=0;k<3;++k)
+        D[j][k]*=0.25/deltaJ[k];
+  Dinv = threebythreeinverse(D);
+
   TorusToUse->SetTP(IM);
+  // now construct D
 }
 PSPT TorusInterpCell::Map3D(Actions J,Angles A){
   Actions ddJ = J-J0+deltaJh,mddJ = deltaJ-ddJ;
@@ -1361,21 +1390,27 @@ PSPT TorusInterpCell::Map3D(Actions J,Angles A){
   return TorusToUse->Map3D(A);
 }
 Frequencies TorusInterpCell::omegas(Actions J){
-  Actions ddJ = J-J0+deltaJh,mddJ = deltaJ-ddJ;
-  return (ddJ[2]*(ddJ[1]*(ddJ[0]*Tori[0]->omegas()
-                        +mddJ[0]*Tori[1]->omegas())
-                +mddJ[1]*(ddJ[0]*Tori[2]->omegas()
-                        +mddJ[0]*Tori[3]->omegas()))
-        +mddJ[2]*(ddJ[1]*(ddJ[0]*Tori[4]->omegas()
-                        +mddJ[0]*Tori[5]->omegas())
-                +mddJ[1]*(ddJ[0]*Tori[6]->omegas()
-                        +mddJ[0]*Tori[7]->omegas())))*deltaprod;
+
+  Frequencies O=0.;
+  for(int j=0;j<3;++j)
+      for(int k=0;k<3;++k)
+        O[j]+=D[j][k]*(J[k]-J0[k]);
+  return O+O0;
 }
+
+Actions TorusInterpCell::actions_from_omegas(Frequencies O){
+
+  Actions J=0.;
+  for(int j=0;j<3;++j)
+      for(int k=0;k<3;++k)
+        J[j]+=Dinv[j][k]*(O[k]-O0[k]);
+  return J+J0;
+}
+
 void TorusInterpCell::test(Actions J,Angles A){
   Torus *T=new Torus;
   T->AutoFit(J,Phi,dJ,N,300,15,5,24,200,24,0);
-  std::cout<<Map3D(J,A)<<" "<<omegas(J)<<" "
-          <<T->Map3D(A)<<" "<<T->omegas()<<std::endl;
+  std::cout<<Map3D(J,A)<<" "<<omegas(J)<<" "<<J<<" "<<actions_from_omegas(T->omegas())<<" "<<T->Map3D(A)<<" "<<T->omegas()<<std::endl;
   return;
 }
 

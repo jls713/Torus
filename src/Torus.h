@@ -1080,6 +1080,7 @@ class TorusInterpCell{
   // the frequencies via linear interpolation
 private:
   Actions J0,J,deltaJ,deltaJh;
+  Frequencies O0;
   Potential *Phi;
   std::vector<Torus*> Tori;
   Torus* TorusToUse;
@@ -1088,10 +1089,12 @@ private:
   const int N;
   GenPar GP,GP1,GP2,GP3;
   AngPar AP;
+  std::vector<std::vector<double> > D, Dinv;
 public:
   TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N);
   PSPT Map3D(Actions J,Angles A);
   Frequencies omegas(Actions J);
+  Actions actions_from_omegas(Frequencies O);
   void test(Actions J,Angles A);
 };
 
