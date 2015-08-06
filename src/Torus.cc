@@ -1318,8 +1318,9 @@ std::vector<std::vector<double> > threebythreeinverse(std::vector<std::vector<do
   return result;
 }
 
+#include "eig3.h"
 
-TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N):J0(J0),Phi(Phi),deltaJ(deltaJ),dJ(dJ),N(N),D(std::vector<std::vector<double> >(3,std::vector<double>(3,0.))){
+TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N):J0(J0),Phi(Phi),deltaJ(deltaJ),dJ(dJ),N(N),D(std::vector<std::vector<double> >(3,std::vector<double>(3,0.))),d(std::vector<std::vector<double> >(3,std::vector<double>(3,0.))),e(std::vector<double>(3,0.)){
   deltaJh=.5*deltaJ;
   deltaprod=deltaJ[0]*deltaJ[1]*deltaJ[2];deltaprod=1./deltaprod;
   TorusToUse=new Torus;
@@ -1343,6 +1344,17 @@ TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, dou
       for(int k=0;k<3;++k)
         D[j][k]*=0.25/deltaJ[k];
   Dinv = threebythreeinverse(D);
+  double Dtmp[3][3],dtmp[3][3],etmp[3];
+  for(int j=0;j<3;++j)
+      for(int k=0;k<3;++k)
+        Dtmp[j][k]=D[j][k];
+  eigen_decomposition(Dtmp,dtmp,etmp);
+
+  for(int j=0;j<3;++j){
+    e[j]=etmp[j];
+    for(int k=0;k<3;++k)
+      d[j][k]=dtmp[j][k];
+  }
 
   TorusToUse->SetTP(IM);
   // now construct D

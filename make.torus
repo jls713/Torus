@@ -37,11 +37,12 @@ Pspline_h	   = $(INCL)Pspline.h $(FreeMemory_h) $(Numerics_h)
 PJMNum_h	   = $(SRCUTILS)PJMNum.h
 PJMebf_h	   = $(SRCUTILS)PJMebf.h
 CHB_h		   = $(SRCUTILS)CHB.h
+eig3_h		   = $(SRCUTILS)eig3.h
 
 AUXIL_H		   = $(Pi_h) $(Random_h) $(Compress_h)   \
 			$(FreeMemory_h) $(Vector_h) $(Matrix_h) \
 			$(Numerics_templates) $(Numerics_h) $(Pspline_h) \
-			$(PJMNum_h) $(CHB_h)
+			$(PJMNum_h) $(CHB_h) $(eig3_h)
 
 #
 # 1.2 header files: basic & the torus machinery
@@ -123,9 +124,10 @@ $(OBJ)PJMebf.o:	$(SRCUTILS)PJMebf.cc $(PJMebf_h)
 		$(CPP) $(CFLAGS) $< ; $(AROTHER)
 $(OBJ)Err.o:	       $(SRCUTILS)Err.cc $(Err_h)
 		       $(CPP) $(CFLAGS) $(SRCUTILS)Err.cc; $(ARTOR)
+$(OBJ)eig3.o:	$(SRCUTILS)eig3.cc $(eig3_h)
+		$(CPP) $(CFLAGS) $< ; $(AROTHER)
 
-
-Other:	$(OBJ)PJMNum.o $(OBJ)CHB.o $(OBJ)PJMCoords.o $(OBJ)PJMebf.o $(OBJ)Err.o
+Other:	$(OBJ)PJMNum.o $(OBJ)CHB.o $(OBJ)PJMCoords.o $(OBJ)PJMebf.o $(OBJ)Err.o $(OBJ)eig3.o
 
 
 
@@ -191,6 +193,8 @@ GiveListProps:	$(EXE)GiveListProps.cc MAIN_LIBS
 AUTOTORUS:	$(EXE)AUTOTORUS.cc MAIN_LIBS
 		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
 Interp:	$(EXE)Interp.cc MAIN_LIBS
+		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
+StreamComp:	$(EXE)StreamComp.cc MAIN_LIBS
 		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)
 AUTOTORI:	$(EXE)AUTOTORI.cc MAIN_LIBS
 		$(CPP) $(MFLAGS) $(EXE)$@.cc $(LDFLAGS)

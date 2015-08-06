@@ -1089,13 +1089,22 @@ private:
   const int N;
   GenPar GP,GP1,GP2,GP3;
   AngPar AP;
-  std::vector<std::vector<double> > D, Dinv;
+  std::vector<std::vector<double> > D, Dinv, d;
+  std::vector<double> e;
 public:
   TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, double dJ,int N);
   PSPT Map3D(Actions J,Angles A);
   Frequencies omegas(Actions J);
   Actions actions_from_omegas(Frequencies O);
   void test(Actions J,Angles A);
+  inline std::vector<double> principal_eigenvector(void){ return d[0];}
+  inline Frequencies DdotJ(Actions J){
+    Frequencies O=0.;
+    for(int i=0;i<3;++i)
+      for (int j = 0; j < 3; ++j)
+          O[i]+=D[i][j]*J[j];
+    return O;
+  }
 };
 
 
