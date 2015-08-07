@@ -18,22 +18,24 @@ plt.show()
 plt.clf()
 
 
+print 'Construct torus and sample angles'
 # Construct torus
 J = np.array([0.1, 0.1, 1.8])
 
 Donut = Torus_py.Torus()
-Donut.make_torus(Log, J, 0.)
+Donut.autofit(J, Log, 1e-5)
 
 for Theta in np.random.uniform(0., 2. * np.pi, size=(1000, 3)):
     X = Donut.map3D(Theta)
     plt.plot([X[0]], [X[1]], 'k.')
-plt.xlabel(r'$x$')
-plt.ylabel(r'$y$')
+plt.xlabel(r'$R$')
+plt.ylabel(r'$z$')
 plt.show()
 
 
 # Define user potential
 
+print 'Define python potential and sample angles -- points should match'
 
 class logpot_python(Torus_py.WDPotential):
 
@@ -52,13 +54,13 @@ class logpot_python(Torus_py.WDPotential):
 
 Log2 = logpot_python(240. / 977.775, 0.9)
 Donut2 = Torus_py.Torus()
-Donut2.make_torus(Log2, J, 0.)
+Donut2.autofit(J, Log2, 1e-5)
 
 for Theta in np.random.uniform(0., 2. * np.pi, size=(1000, 3)):
     X = Donut2.map3D(Theta)
     Y = Donut.map3D(Theta)
     plt.plot([X[0]], [X[1]], 'k.')
     plt.plot([Y[0]], [Y[1]], 'rx')
-plt.xlabel(r'$x$')
-plt.ylabel(r'$y$')
+plt.xlabel(r'$R$')
+plt.ylabel(r'$z$')
 plt.show()

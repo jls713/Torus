@@ -2,3 +2,5 @@ bin/*
 *.o
 *.a
 *.DS_Store
+*.out
+*.so

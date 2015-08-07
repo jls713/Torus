@@ -192,6 +192,9 @@ public:
 // ==========================================================================
 // Now define members of python library
 
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(autofits, Torus::AutoFit, 3, 12)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(make_toruss, Torus::AutoTorus, 2, 4)
+
 BOOST_PYTHON_MODULE_INIT(Torus_py) {
   boost::python::numeric::array::set_module_and_type("numpy", "ndarray");
   class_<Potential, boost::noncopyable,
@@ -223,9 +226,16 @@ BOOST_PYTHON_MODULE_INIT(Torus_py) {
       .def("dS3",&Torus::dS3)
       .def("n1",&Torus::n1)
       .def("n2",&Torus::n2)
-      .def("make_torus", &Torus::AutoTorus)
-      .def("autofit", &Torus::AutoFit)
+      .def("make_torus", &Torus::AutoTorus,make_toruss())
+      .def("autofit", &Torus::AutoFit,autofits())
       .def("map3D", &Torus::Map3D);
+
+  class_<TorusInterpCell, boost::noncopyable>("TorusInterpCell", init<Actions,Potential*,Actions,double,int>())
+    .def("Map3D",&TorusInterpCell::Map3D)
+    .def("omegas",&TorusInterpCell::omegas)
+    .def("actions_from_omegas",&TorusInterpCell::actions_from_omegas)
+    .def("principal_eigenvector",&TorusInterpCell::principal_eigenvector)
+    .def("DdotJ",&TorusInterpCell::DdotJ);
 
   // For action, angle, frequency vectors
   to_python_converter<Vector<double, 3>, WDvector_to_ndarray<double, 3> >();

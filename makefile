@@ -25,16 +25,16 @@ OBJ		= obj/
 BIN		= bin/
 INCL		= src/utils/
 LIB		= obj/
-EBFINC		= ../libebf_c_cpp-0.0.3/include/
-EBFLIB		= ../libebf_c_cpp-0.0.3/lib/
+EBFINC		= /data/jls/libebf_c_cpp-0.0.3/include/
+EBFLIB		= /data/jls/libebf_c_cpp-0.0.3/lib/
 
 # Compiler
-CPP	= g++-4.9
+CPP	= /opt/ioa/software/gcc/4.7.2/bin/g++
 
 # flags for compiler for optimized & debug code
-CFLAGS 	= -c -o $@ -O3 -ffast-math -I$(INC) -I$(SRCPOT) -I$(SRCUTILS) -I$(EBFINC)
-CFLAGS_WD = -c -o $@ -O3 -ffast-math -I$(SRCUTILS)
-MFLAGS	= -O3 -ffast-math -I$(INC) -I$(SRCPOT) -I$(INCL) -I$(EBFINC)
+CFLAGS 	= -c -o $@ -O3 -ffast-math -fPIC -I$(INC) -I$(SRCPOT) -I$(SRCUTILS) -I$(EBFINC)
+CFLAGS_WD = -c -o $@ -O3 -fPIC -ffast-math -I$(SRCUTILS)
+MFLAGS	= -O3 -fPIC -ffast-math -I$(INC) -I$(SRCPOT) -I$(INCL) -I$(EBFINC)
 
 #This block was added for portability across Mac OSX and Linux
 # With thanks to Cecilia Mateu.

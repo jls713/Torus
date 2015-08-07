@@ -1357,7 +1357,6 @@ TorusInterpCell::TorusInterpCell(Actions J0, Potential* Phi, Actions deltaJ, dou
   }
 
   TorusToUse->SetTP(IM);
-  // now construct D
 }
 PSPT TorusInterpCell::Map3D(Actions J,Angles A){
   Actions ddJ = J-J0+deltaJh,mddJ = deltaJ-ddJ;
